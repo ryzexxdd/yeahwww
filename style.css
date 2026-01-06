@@ -5,30 +5,38 @@ body {
 }
 
 /* tabs */
-/* tabs */
 .tabs {
   display: flex;
-  margin: 8px auto;              /* меньше отступ сверху */
+  margin: 12px auto;
   width: calc(100% - 32px);
   max-width: 420px;
-  background: #e6e6e6;
-  border-radius: 12px;
-  padding: 3px;                  /* было 4px → меньше */
+
+  background: #e5e5e5;
+  border-radius: 16px;
+  padding: 4px;
 }
 
 .tab {
   flex: 1;
   border: none;
   background: transparent;
-  padding: 8px 0;                /* ↓ ВАЖНО: уменьшили высоту */
-  border-radius: 10px;
-  font-size: 14px;               /* было 15px */
+
+  padding: 12px 0;        /* ВОТ КЛЮЧ — нормальная высота */
+  border-radius: 14px;
+
+  font-size: 15px;
+  font-weight: 400;
   color: #9a9a9a;
+
+  transition: all 0.2s ease;
 }
 
 .tab.active {
   background: #ffffff;
   color: #000;
+  font-weight: 500;
+}
+
 
 /* screens */
 .screen {
@@ -153,6 +161,3 @@ body {
   cursor: pointer;
   line-height: 1;
 }
-
-
-
