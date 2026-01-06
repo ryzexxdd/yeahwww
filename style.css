@@ -8,26 +8,24 @@ body {
 .tabs {
   display: flex;
   margin: 12px auto;
-  width: calc(100% - 32px);
-  max-width: 420px;
+  width: calc(100% - 64px);   /* было -32px → делаем уже */
+  max-width: 360px;           /* было 420px */
   background: #e5e5e5;
   border-radius: 14px;
   padding: 4px;
 }
 
-.tab {
-  padding: 10px;
-  font-size: 14px;
 }
  
 .tab {
   flex: 1;
   border: none;
   background: transparent;
-  padding: 12px;
+  padding: 8px 0;     /* было 12px → ниже */
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 14px;    /* чуть меньше */
   color: #888;
+}
 }
 
 .tab.active {
@@ -159,3 +157,8 @@ body {
   cursor: pointer;
   line-height: 1;
 }
+
+  cursor: pointer;
+  line-height: 1;
+}
+
