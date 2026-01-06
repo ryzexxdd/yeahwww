@@ -7,13 +7,13 @@ body {
 /* tabs */
 .tabs {
   display: flex;
-  margin: 12px auto;
+  margin: 8px auto;                 /* меньше отступ сверху */
   width: calc(100% - 32px);
   max-width: 420px;
 
   background: #e5e5e5;
-  border-radius: 16px;
-  padding: 4px;
+  border-radius: 12px;              /* было 16 */
+  padding: 3px;                     /* было 4 */
 }
 
 .tab {
@@ -21,14 +21,18 @@ body {
   border: none;
   background: transparent;
 
-  padding: 12px 0;        /* ВОТ КЛЮЧ — нормальная высота */
-  border-radius: 14px;
+  padding: 7px 0;                   /* 🔴 КЛЮЧ: было 12px */
+  border-radius: 10px;              /* было 14 */
 
-  font-size: 15px;
+  font-size: 14px;                  /* было 15 */
   font-weight: 400;
   color: #9a9a9a;
+}
 
-  transition: all 0.2s ease;
+.tab.active {
+  background: #ffffff;
+  color: #000;
+  font-weight: 500;
 }
 
 .tab.active {
