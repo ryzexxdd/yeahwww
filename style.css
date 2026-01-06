@@ -7,12 +7,19 @@ body {
 /* tabs */
 .tabs {
   display: flex;
-  margin: 12px;
+  margin: 12px auto;
+  width: calc(100% - 32px);
+  max-width: 420px;
   background: #e5e5e5;
   border-radius: 14px;
   padding: 4px;
 }
 
+.tab {
+  padding: 10px;
+  font-size: 14px;
+}
+ 
 .tab {
   flex: 1;
   border: none;
@@ -38,9 +45,12 @@ body {
 .screen.active {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
+#req .actions {
+  margin-top: 16px;
+}
+ 
 /* photo */
 .photo-area {
   flex: 1;
@@ -149,4 +159,3 @@ body {
   cursor: pointer;
   line-height: 1;
 }
-
