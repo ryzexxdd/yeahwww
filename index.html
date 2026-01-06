@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tg-yeahwww</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <button class="back">‹</button>
+    <h1>Удостоверение личности</h1>
+  </header>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" data-tab="doc">Документ</button>
+    <button class="tab" data-tab="req">Реквизиты</button>
+  </div>
+
+  <!-- DOCUMENT -->
+  <section id="doc" class="screen active">
+    <div class="center">
+      <label class="upload-btn">
+        Загрузить фото
+        <input type="file" id="photo" accept="image/*">
+      </label>
+
+      <div id="preview"></div>
+    </div>
+
+    <div class="actions">
+      <button class="primary">Предъявить документ</button>
+      <button class="outline">Отправить документ</button>
+    </div>
+  </section>
+
+  <!-- REQUISITES -->
+  <section id="req" class="screen">
+    <div class="form">
+
+      <div class="field">
+        <label>ФИО</label>
+        <input type="text" placeholder="Официальный Телеграмм - @yeahwww">
+      </div>
+
+      <div class="field">
+        <label>ИИН</label>
+        <input type="text" placeholder="Официальный Телеграмм - @yeahwww">
+      </div>
+
+      <div class="field">
+        <label>Дата рождения</label>
+        <input type="date">
+      </div>
+
+      <div class="field">
+        <label>Номер документа</label>
+        <input type="text">
+      </div>
+
+      <div class="field">
+        <label>Дата выдачи</label>
+        <input type="date">
+      </div>
+
+      <div class="field">
+        <label>Срок действия</label>
+        <input type="date">
+      </div>
+
+    </div>
+
+    <div class="actions">
+      <button class="outline">Отправить реквизиты</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* tabs */
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  }
+});
+
+/* photo preview */
+const photo=document.getElementById('photo');
+const preview=document.getElementById('preview');
+photo.onchange=()=>{
+  const f=photo.files[0];
+  if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    preview.innerHTML=`<img src="${e.target.result}">`;
+    localStorage.setItem('photo',e.target.result);
+  };
+  r.readAsDataURL(f);
+};
+
+const saved=localStorage.getItem('photo');
+if(saved){
+  preview.innerHTML=`<img src="${saved}">`;
+}
+</script>
+
+</body>
+</html>
