@@ -1,6 +1,6 @@
 {
   "name": "TG-yeahwww",
-  "short_name": "yeahwww",
+  "short_name": "TG-yeahwww",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -19,4 +19,5 @@
     }
   ]
 }
+
 
