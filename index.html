@@ -172,8 +172,24 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 })();
 </script>
+<script>
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.copy-btn');
+  if (!btn) return;
+
+  const inputId = btn.dataset.copy;
+  const input = document.getElementById(inputId);
+  if (!input) return;
+
+  navigator.clipboard.writeText(input.value || '');
+
+  btn.style.opacity = '0.5';
+  setTimeout(() => btn.style.opacity = '1', 300);
+});
+</script>
 
 </body>
 </html>
+
 
 
