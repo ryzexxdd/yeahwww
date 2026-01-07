@@ -77,8 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 
   <div class="actions">
-    <button class="primary">Предъявить документ</button>
-    <button class="outline">Отправить документ</button>
+   <button class="primary" id="showQrBtn">Предъявить документ</button>
+
+   <button class="outline">Отправить документ</button>
   </div>
 </section>
 
@@ -177,10 +178,12 @@ document.addEventListener('DOMContentLoaded', () => {
     preview.innerHTML = `<img src="${savedPhoto}">`;
     uploadBtn.style.display = 'none';
   }
-
 });
 </script>
 
 </body>
 </html>
+
+</html>
+
 
