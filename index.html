@@ -7,7 +7,7 @@
   <meta charset="UTF-8"> 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>TG-yeahwww</title>
+  <title>yeahwww</title>
 
   <link rel="stylesheet" href="style.css">
 
@@ -21,6 +21,60 @@
 
   <link rel="apple-touch-icon" href="icon-512.png">
 </head>
+
+<script>
+/* ---------- сохранение фото ---------- */
+const photoInput = document.getElementById('photo');
+const uploadBtn = document.getElementById('uploadBtn');
+const preview = document.getElementById('preview');
+
+uploadBtn.onclick = () => photoInput.click();
+
+photoInput.onchange = () => {
+  const file = photoInput.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    preview.innerHTML = `<img src="${e.target.result}">`;
+    uploadBtn.style.display = 'none';
+    localStorage.setItem('photo', e.target.result);
+  };
+  reader.readAsDataURL(file);
+};
+
+const savedPhoto = localStorage.getItem('photo');
+if (savedPhoto) {
+  preview.innerHTML = `<img src="${savedPhoto}">`;
+  uploadBtn.style.display = 'none';
+}
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  };
+});
+
+/* ---------- сохранение реквизитов ---------- */
+const fields = ['fio', 'iin', 'birth', 'docnum', 'issued', 'expiry'];
+
+fields.forEach(id => {
+  const input = document.getElementById(id);
+  if (!input) return;
+
+  const saved = localStorage.getItem(id);
+  if (saved) input.value = saved;
+
+  input.addEventListener('input', () => {
+    localStorage.setItem(id, input.value);
+  });
+});
+</script>
+
 
 <body>
 
@@ -54,36 +108,36 @@
 <section id="req" class="screen">
   <div class="form">
 
-    <div class="field">
+   <div class="field">
   <label>ФИО</label>
-  <input type="text" placeholder="Официальный Telegram – @yeahwww">
+  <input id="fio" type="text" placeholder="Официальный Telegram – @yeahwww">
 </div>
 
 <div class="field">
   <label>ИИН</label>
-  <input type="text" placeholder="Официальный Telegram – @yeahwww">
+  <input id="iin" type="text" placeholder="Официальный Telegram – @yeahwww">
 </div>
 
 <div class="field">
   <label>Дата рождения</label>
-  <input type="text" placeholder="">
+  <input id="birth" type="text">
 </div>
 
+<div class="field">
+  <label>Номер документа</label>
+  <input id="docnum" type="text">
+</div>
 
-    <div class="field">
-      <label>Номер документа</label>
-      <input type="text">
-    </div>
+<div class="field">
+  <label>Дата выдачи</label>
+  <input id="issued" type="text">
+</div>
 
-    <div class="field">
-      <label>Дата выдачи</label>
-      <input type="text">
-    </div>
+<div class="field">
+  <label>Срок действия</label>
+  <input id="expiry" type="text">
+</div>
 
-    <div class="field">
-      <label>Срок действия</label>
-      <input type="text">
-    </div>
 
   </div>
 
@@ -126,9 +180,46 @@ document.querySelectorAll('.tab').forEach(btn=>{
     btn.classList.add('active');
     document.getElementById(btn.dataset.tab).classList.add('active');
   };
+
+
+<input id="fio" type="text" placeholder="Официальный Telegram – @yeahwww">
+<input id="iin" type="text" placeholder="Официальный Telegram – @yeahwww">
+<input id="birth" type="text">
+<input id="docnum" type="text">
+<input id="issued" type="text">
+<input id="expiry" type="text">
+ 
+});
+
+<script>
+const fields = [
+  'fio',
+  'iin',
+  'birth',
+  'docnum',
+  'issued',
+  'expiry'
+];
+
+// загрузка сохранённых данных
+fields.forEach(id => {
+  const input = document.getElementById(id);
+  if (!input) return;
+
+  const saved = localStorage.getItem(id);
+  if (saved) input.value = saved;
+
+  // сохранение при вводе
+  input.addEventListener('input', () => {
+    localStorage.setItem(id, input.value);
+  });
 });
 </script>
 
+
 </body>
 </html>
+
+</html>
+
 
