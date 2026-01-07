@@ -10,18 +10,14 @@
   <title>yeahwww</title>
 
   <link rel="stylesheet" href="style.css">
-
-  <!-- PWA / иконка приложения -->
   <link rel="manifest" href="manifest.json">
 
-  <!-- iOS иконка -->
-<link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
-<link rel="apple-touch-icon" sizes="167x167" href="icon-167.png">
-<link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
-
+  <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="icon-167.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
   <link rel="apple-touch-icon" href="icon-512.png">
 </head>
- 
+
 <body>
 
 <script>
@@ -32,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-
       btn.classList.add('active');
       document.getElementById(btn.dataset.tab).classList.add('active');
     });
@@ -40,14 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ---------- form save ---------- */
   const fields = ['fio', 'iin', 'birth', 'docnum', 'issued', 'expiry'];
-
   fields.forEach(id => {
     const input = document.getElementById(id);
     if (!input) return;
-
-    const saved = localStorage.getItem(id);
-    if (saved) input.value = saved;
-
+    input.value = localStorage.getItem(id) || '';
     input.addEventListener('input', () => {
       localStorage.setItem(id, input.value);
     });
@@ -55,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 </script>
- 
+
 <!-- HEADER -->
 <div class="header">
   <button class="back-btn" onclick="history.back()">‹</button>
@@ -77,7 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 
   <div class="actions">
-    <button class="primary">Предъявить документ</button>
+    <!-- ❗ ТОЛЬКО ДОБАВЛЕН id -->
+    <button class="primary" id="showQrBtn">Предъявить документ</button>
     <button class="outline">Отправить документ</button>
   </div>
 </section>
@@ -86,43 +78,61 @@ document.addEventListener('DOMContentLoaded', () => {
 <section id="req" class="screen">
   <div class="form">
 
-   <div class="field">
-  <label>ФИО</label>
-  <input id="fio" type="text" placeholder="Официальный Telegram – @yeahwww">
-</div>
+    <div class="field">
+      <label>ФИО</label>
+      <input id="fio" type="text" placeholder="Официальный Telegram – @yeahwww">
+    </div>
 
-<div class="field">
-  <label>ИИН</label>
-  <input id="iin" type="text" placeholder="Официальный Telegram – @yeahwww">
-</div>
+    <div class="field">
+      <label>ИИН</label>
+      <input id="iin" type="text">
+    </div>
 
-<div class="field">
-  <label>Дата рождения</label>
-  <input id="birth" type="text">
-</div>
+    <div class="field">
+      <label>Дата рождения</label>
+      <input id="birth" type="text">
+    </div>
 
-<div class="field">
-  <label>Номер документа</label>
-  <input id="docnum" type="text">
-</div>
+    <div class="field">
+      <label>Номер документа</label>
+      <input id="docnum" type="text">
+    </div>
 
-<div class="field">
-  <label>Дата выдачи</label>
-  <input id="issued" type="text">
-</div>
+    <div class="field">
+      <label>Дата выдачи</label>
+      <input id="issued" type="text">
+    </div>
 
-<div class="field">
-  <label>Срок действия</label>
-  <input id="expiry" type="text">
-</div>
+    <div class="field">
+      <label>Срок действия</label>
+      <input id="expiry" type="text">
+    </div>
 
-
-  </div>
-
-  <div class="actions">
-    <button class="outline">Отправить реквизиты</button>
   </div>
 </section>
+
+<!-- ===== QR MODAL (ДОБАВЛЕН, НИЧЕГО НЕ ЛОМАЕТ) ===== -->
+<div id="qrModal" class="qr-modal">
+  <div class="qr-sheet">
+    <div class="qr-header">
+      <div class="qr-title">Удостоверение личности</div>
+      <button class="qr-close" id="closeQr">×</button>
+    </div>
+
+    <div class="qr-content">
+      <div class="qr-text">Покажите QR-код сотруднику</div>
+      <img
+        src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=yeahwww"
+        class="qr-image"
+        alt="QR"
+      >
+      <div class="qr-subtext">или скажите код</div>
+      <div class="qr-code">080824</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ЗАГРУЗКА ФОТО ===== -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -130,16 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const photoInput = document.getElementById('photo');
   const preview = document.getElementById('preview');
 
-  // открыть выбор файла
-  uploadBtn.addEventListener('click', () => {
-    photoInput.click();
-  });
+  uploadBtn.addEventListener('click', () => photoInput.click());
 
-  // показать фото
   photoInput.addEventListener('change', () => {
     const file = photoInput.files[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = e => {
       preview.innerHTML = `<img src="${e.target.result}" style="width:100%;border-radius:14px;">`;
@@ -150,7 +155,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 </script>
- <script>
+
+<!-- ===== QR LOGIC (ТВОЙ ЖЕ JS) ===== -->
+<script>
 (function () {
   const showBtn = document.getElementById('showQrBtn');
   const modal = document.getElementById('qrModal');
@@ -167,17 +174,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   modal.addEventListener('click', e => {
-    if (e.target === modal) {
-      modal.classList.remove('show');
-    }
+    if (e.target === modal) modal.classList.remove('show');
   });
 })();
 </script>
 
 </body>
 </html>
-</body>
-</html>
-
-
-
