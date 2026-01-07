@@ -69,8 +69,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   <div class="actions">
     <!-- ❗ ТОЛЬКО ДОБАВЛЕН id -->
-    <button class="primary" id="showQrBtn">Предъявить документ</button>
-    <button class="outline">Отправить документ</button>
+    <button class="primary" id="showQrBtn">
+  <span class="btn-icon qr"></span>
+  <span>Предъявить документ</span>
+</button>
+
+<button class="outline">
+  <span class="btn-icon share"></span>
+  <span>Отправить документ</span>
+</button>
+
   </div>
 </section>
 
@@ -181,4 +189,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+
 
