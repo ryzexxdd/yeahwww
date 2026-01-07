@@ -323,3 +323,49 @@ button {
 .primary .btn-icon.share {
   filter: brightness(0) invert(1);
 }
+
+/* ===== COPY ICON ===== */
+.copy-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.field-text {
+  flex: 1;
+}
+
+.copy-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.copy-btn::before,
+.copy-btn::after {
+  content: "";
+  position: absolute;
+  border: 2px solid #b0b0b0;
+  border-radius: 4px;
+  width: 14px;
+  height: 16px;
+}
+
+.copy-btn::before {
+  top: 6px;
+  left: 8px;
+  background: #fff;
+}
+
+.copy-btn::after {
+  top: 3px;
+  left: 5px;
+  background: #fff;
+}
+
+.copy-btn:active {
+  transform: scale(0.9);
+}
