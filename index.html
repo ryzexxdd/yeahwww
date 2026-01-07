@@ -133,32 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
  
 });
 
-<script>
-const fields = [
-  'fio',
-  'iin',
-  'birth',
-  'docnum',
-  'issued',
-  'expiry'
-];
-
-// загрузка сохранённых данных
-fields.forEach(id => {
-  const input = document.getElementById(id);
-  if (!input) return;
-
-  const saved = localStorage.getItem(id);
-  if (saved) input.value = saved;
-
-  // сохранение при вводе
-  input.addEventListener('input', () => {
-    localStorage.setItem(id, input.value);
-  });
-});
-</script>
-
-
 </body>
 </html>
+
 
