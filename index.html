@@ -80,32 +80,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <div class="field">
       <label>ФИО</label>
-      <input id="fio" type="text"placeholder="Официальный Telegram – @yeahwww">
+      <div class="copy-field">
+        <input id="fio" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww">
+        <button class="copy-btn" data-copy="fio"></button>
+      </div>
     </div>
 
     <div class="field">
       <label>ИИН</label>
-      <input id="iin" type="text"placeholder="Официальный Telegram – @yeahwww">
+      <div class="copy-field">
+        <input id="iin" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww">
+        <button class="copy-btn" data-copy="iin"></button>
+      </div>
     </div>
 
     <div class="field">
       <label>Дата рождения</label>
-      <input id="birth" type="text">
+      <div class="copy-field">
+        <input id="birth" type="text" class="field-text">
+        <button class="copy-btn" data-copy="birth"></button>
+      </div>
     </div>
 
     <div class="field">
       <label>Номер документа</label>
-      <input id="docnum" type="text">
+      <div class="copy-field">
+        <input id="docnum" type="text" class="field-text">
+        <button class="copy-btn" data-copy="docnum"></button>
+      </div>
     </div>
 
     <div class="field">
       <label>Дата выдачи</label>
-      <input id="issued" type="text">
+      <div class="copy-field">
+        <input id="issued" type="text" class="field-text">
+        <button class="copy-btn" data-copy="issued"></button>
+      </div>
     </div>
 
     <div class="field">
       <label>Срок действия</label>
-      <input id="expiry" type="text">
+      <div class="copy-field">
+        <input id="expiry" type="text" class="field-text">
+        <button class="copy-btn" data-copy="expiry"></button>
+      </div>
     </div>
 
     <div class="actions">
@@ -172,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 })();
 </script>
+
 <script>
 document.addEventListener('click', e => {
   const btn = e.target.closest('.copy-btn');
@@ -190,7 +209,3 @@ document.addEventListener('click', e => {
 
 </body>
 </html>
-
-
-
-
