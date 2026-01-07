@@ -123,6 +123,33 @@ document.addEventListener('DOMContentLoaded', () => {
     <button class="outline">Отправить реквизиты</button>
   </div>
 </section>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
 
+  const uploadBtn = document.getElementById('uploadBtn');
+  const photoInput = document.getElementById('photo');
+  const preview = document.getElementById('preview');
+
+  // открыть выбор файла
+  uploadBtn.addEventListener('click', () => {
+    photoInput.click();
+  });
+
+  // показать фото
+  photoInput.addEventListener('change', () => {
+    const file = photoInput.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.innerHTML = `<img src="${e.target.result}" style="width:100%;border-radius:14px;">`;
+      uploadBtn.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+
+});
+</script>
+ 
 </body>
 </html>
