@@ -150,10 +150,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 </script>
- 
+ <script>
+(function () {
+  const showBtn = document.getElementById('showQrBtn');
+  const modal = document.getElementById('qrModal');
+  const closeBtn = document.getElementById('closeQr');
+
+  if (!showBtn || !modal || !closeBtn) return;
+
+  showBtn.addEventListener('click', () => {
+    modal.classList.add('show');
+  });
+
+  closeBtn.addEventListener('click', () => {
+    modal.classList.remove('show');
+  });
+
+  modal.addEventListener('click', e => {
+    if (e.target === modal) {
+      modal.classList.remove('show');
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
 </body>
 </html>
+
 
 
