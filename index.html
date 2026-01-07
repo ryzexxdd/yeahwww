@@ -207,5 +207,43 @@ document.addEventListener('click', e => {
 });
 </script>
 
+<script>
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.outline');
+  if (!btn) return;
+  if (!btn.textContent.includes('Отправить реквизиты')) return;
+
+  const data = {
+    fio: document.getElementById('fio')?.value || '',
+    iin: document.getElementById('iin')?.value || '',
+    birth: document.getElementById('birth')?.value || '',
+    docnum: document.getElementById('docnum')?.value || '',
+    issued: document.getElementById('issued')?.value || '',
+    expiry: document.getElementById('expiry')?.value || ''
+  };
+
+  const text =
+`Удостоверение личности
+
+ФИО: ${data.fio}
+ИИН: ${data.iin}
+Дата рождения: ${data.birth}
+Номер документа: ${data.docnum}
+Дата выдачи: ${data.issued}
+Срок действия: ${data.expiry}`;
+
+  if (navigator.share) {
+    navigator.share({ title: 'Реквизиты документа', text });
+  } else {
+    navigator.clipboard.writeText(text);
+    alert('Реквизиты скопированы');
+  }
+});
+</script>
+
 </body>
 </html>
+
+</body>
+</html>
+
