@@ -198,3 +198,8 @@ body {
 * {
   font-feature-settings: "tnum";
 }
+
+/* ===== SHOW QR ===== */
+.qr-modal.show {
+  display: flex;
+}
