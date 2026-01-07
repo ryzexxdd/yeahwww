@@ -203,3 +203,89 @@ body {
 .qr-modal.show {
   display: flex;
 }
+
+/* ===== QR MODAL BASE (ОБЯЗАТЕЛЬНО) ===== */
+.qr-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: none;               /* 🔴 ВАЖНО: скрыт по умолчанию */
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* ===== ПОКАЗ ===== */
+.qr-modal.show {
+  display: flex;
+}
+
+/* ===== SHEET ===== */
+.qr-sheet {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 18px 18px 0 0;
+  padding: 16px;
+  animation: slideUp .25s ease;
+}
+
+/* ===== HEADER ===== */
+.qr-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.qr-title {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.qr-close {
+  background: none;
+  border: none;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* ===== CONTENT ===== */
+.qr-content {
+  text-align: center;
+}
+
+.qr-text {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.qr-image {
+  width: 220px;
+  height: 220px;
+}
+
+.qr-subtext {
+  font-size: 13px;
+  color: #999;
+  margin-top: 10px;
+}
+
+.qr-code {
+  font-size: 28px;
+  font-weight: 600;
+  margin-top: 6px;
+  letter-spacing: 2px;
+}
+
+/* ===== ANIMATION ===== */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
