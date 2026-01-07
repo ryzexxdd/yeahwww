@@ -124,16 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 </section>
 
-/* tabs */
-document.querySelectorAll('.tab').forEach(btn=>{
-  btn.onclick = ()=>{
-    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(btn.dataset.tab).classList.add('active');
-  };
-
-
 <input id="fio" type="text" placeholder="Официальный Telegram – @yeahwww">
 <input id="iin" type="text" placeholder="Официальный Telegram – @yeahwww">
 <input id="birth" type="text">
@@ -171,3 +161,4 @@ fields.forEach(id => {
 
 </body>
 </html>
+
