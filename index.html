@@ -1,64 +1,24 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta name="theme-color" content="#ffffff">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta charset="UTF-8"> 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
 
   <title>yeahwww</title>
 
   <link rel="stylesheet" href="style.css">
-
-  <!-- PWA / иконка приложения -->
   <link rel="manifest" href="manifest.json">
-
-  <!-- iOS иконка -->
-<link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
-<link rel="apple-touch-icon" sizes="167x167" href="icon-167.png">
-<link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
-
   <link rel="apple-touch-icon" href="icon-512.png">
 </head>
- 
+
 <body>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-
-  /* ---------- tabs ---------- */
-  document.querySelectorAll('.tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-
-      btn.classList.add('active');
-      document.getElementById(btn.dataset.tab).classList.add('active');
-    });
-  });
-
-  /* ---------- form save ---------- */
-  const fields = ['fio', 'iin', 'birth', 'docnum', 'issued', 'expiry'];
-
-  fields.forEach(id => {
-    const input = document.getElementById(id);
-    if (!input) return;
-
-    const saved = localStorage.getItem(id);
-    if (saved) input.value = saved;
-
-    input.addEventListener('input', () => {
-      localStorage.setItem(id, input.value);
-    });
-  });
-
-});
-</script>
- 
 <!-- HEADER -->
 <div class="header">
-  <button class="back-btn" onclick="history.back()">‹</button>
+  <button class="back-btn">‹</button>
   <div class="header-title">Удостоверение личности</div>
 </div>
 
@@ -72,12 +32,12 @@ document.addEventListener('DOMContentLoaded', () => {
 <section id="doc" class="screen active">
   <div class="photo-area">
     <button id="uploadBtn" class="upload-btn">Загрузить фото</button>
-    <input type="file" id="photo" accept="image/*" hidden>
+    <input type="file" id="photo" hidden accept="image/*">
     <div id="preview"></div>
   </div>
 
   <div class="actions">
-    <button class="primary">Предъявить документ</button>
+    <button class="primary" id="showQrBtn">Предъявить документ</button>
     <button class="outline">Отправить документ</button>
   </div>
 </section>
@@ -85,71 +45,97 @@ document.addEventListener('DOMContentLoaded', () => {
 <!-- REQUISITES -->
 <section id="req" class="screen">
   <div class="form">
+    <div class="field">
+      <label>ФИО</label>
+      <input id="fio" placeholder="Официальный Telegram – @yeahwww">
+    </div>
 
-   <div class="field">
-  <label>ФИО</label>
-  <input id="fio" type="text" placeholder="Официальный Telegram – @yeahwww">
-</div>
-
-<div class="field">
-  <label>ИИН</label>
-  <input id="iin" type="text" placeholder="Официальный Telegram – @yeahwww">
-</div>
-
-<div class="field">
-  <label>Дата рождения</label>
-  <input id="birth" type="text">
-</div>
-
-<div class="field">
-  <label>Номер документа</label>
-  <input id="docnum" type="text">
-</div>
-
-<div class="field">
-  <label>Дата выдачи</label>
-  <input id="issued" type="text">
-</div>
-
-<div class="field">
-  <label>Срок действия</label>
-  <input id="expiry" type="text">
-</div>
-
-
-  </div>
-
-  <div class="actions">
-    <button class="outline">Отправить реквизиты</button>
+    <div class="field"><label>ИИН</label><input id="iin"></div>
+    <div class="field"><label>Дата рождения</label><input id="birth"></div>
+    <div class="field"><label>Номер документа</label><input id="docnum"></div>
+    <div class="field"><label>Дата выдачи</label><input id="issued"></div>
+    <div class="field"><label>Срок действия</label><input id="expiry"></div>
   </div>
 </section>
+
+<!-- QR MODAL -->
+<div id="qrModal" class="qr-modal">
+  <div class="qr-sheet">
+    <div class="qr-header">
+      <div class="qr-title">Удостоверение личности</div>
+      <button class="qr-close" id="closeQr">×</button>
+    </div>
+
+    <div class="qr-content">
+      <div class="qr-text">Покажите QR-код сотруднику</div>
+      <img class="qr-image"
+        src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=yeahwww">
+      <div class="qr-subtext">или скажите код</div>
+      <div class="qr-code">080824</div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ ЕДИНСТВЕННЫЙ JS -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
-  const uploadBtn = document.getElementById('uploadBtn');
-  const photoInput = document.getElementById('photo');
-  const preview = document.getElementById('preview');
-
-  // открыть выбор файла
-  uploadBtn.addEventListener('click', () => {
-    photoInput.click();
+  /* ===== ТАБЫ ===== */
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    };
   });
 
-  // показать фото
-  photoInput.addEventListener('change', () => {
-    const file = photoInput.files[0];
+  /* ===== ЗАГРУЗКА ФОТО ===== */
+  const uploadBtn = document.getElementById('uploadBtn');
+  const photo = document.getElementById('photo');
+  const preview = document.getElementById('preview');
+
+  uploadBtn.onclick = () => photo.click();
+
+  photo.onchange = () => {
+    const file = photo.files[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = e => {
-      preview.innerHTML = `<img src="${e.target.result}" style="width:100%;border-radius:14px;">`;
+      preview.innerHTML = `<img src="${e.target.result}">`;
       uploadBtn.style.display = 'none';
+      localStorage.setItem('photo', e.target.result);
     };
     reader.readAsDataURL(file);
+  };
+
+  const savedPhoto = localStorage.getItem('photo');
+  if (savedPhoto) {
+    preview.innerHTML = `<img src="${savedPhoto}">`;
+    uploadBtn.style.display = 'none';
+  }
+
+  /* ===== СОХРАНЕНИЕ ПОЛЕЙ ===== */
+  ['fio','iin','birth','docnum','issued','expiry'].forEach(id => {
+    const el = document.getElementById(id);
+    el.value = localStorage.getItem(id) || '';
+    el.oninput = () => localStorage.setItem(id, el.value);
   });
+
+  /* ===== QR ===== */
+  const showQrBtn = document.getElementById('showQrBtn');
+  const qrModal = document.getElementById('qrModal');
+  const closeQr = document.getElementById('closeQr');
+
+  showQrBtn.onclick = () => qrModal.classList.add('show');
+  closeQr.onclick = () => qrModal.classList.remove('show');
+  qrModal.onclick = e => e.target === qrModal && qrModal.classList.remove('show');
 
 });
 </script>
- 
+
 </body>
 </html>
+
+
