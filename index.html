@@ -23,7 +23,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
-  /* ---------- tabs ---------- */
   document.querySelectorAll('.tab').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
@@ -33,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* ---------- form save ---------- */
   const fields = ['fio', 'iin', 'birth', 'docnum', 'issued', 'expiry'];
   fields.forEach(id => {
     const input = document.getElementById(id);
@@ -47,19 +45,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<!-- HEADER -->
 <div class="header">
   <button class="back-btn" onclick="history.back()">‹</button>
   <div class="header-title">Удостоверение личности</div>
 </div>
 
-<!-- TABS -->
 <div class="tabs">
   <button class="tab active" data-tab="doc">Документ</button>
   <button class="tab" data-tab="req">Реквизиты</button>
 </div>
 
-<!-- DOCUMENT -->
 <section id="doc" class="screen active">
   <div class="photo-area">
     <button id="uploadBtn" class="upload-btn">Загрузить фото</button>
@@ -68,32 +63,29 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 
   <div class="actions">
-    <!-- ❗ ТОЛЬКО ДОБАВЛЕН id -->
     <button class="primary" id="showQrBtn">
-  <span class="btn-icon qr"></span>
-  <span>Предъявить документ</span>
-</button>
+      <span class="btn-icon qr"></span>
+      <span>Предъявить документ</span>
+    </button>
 
-<button class="outline">
-  <span class="btn-icon share"></span>
-  <span>Отправить документ</span>
-</button>
-
+    <button class="outline">
+      <span class="btn-icon share"></span>
+      <span>Отправить документ</span>
+    </button>
   </div>
 </section>
 
-<!-- REQUISITES -->
 <section id="req" class="screen">
   <div class="form">
 
     <div class="field">
       <label>ФИО</label>
-      <input id="fio" type="text" placeholder="Официальный Telegram – @yeahwww">
+      <input id="fio" type="text">
     </div>
 
     <div class="field">
       <label>ИИН</label>
-      <input id="iin" type="text" placeholder="Официальный Telegram – @yeahwww">
+      <input id="iin" type="text">
     </div>
 
     <div class="field">
@@ -115,17 +107,17 @@ document.addEventListener('DOMContentLoaded', () => {
       <label>Срок действия</label>
       <input id="expiry" type="text">
     </div>
-<div class="actions">
-    <button class="outline">
-      <span class="btn-icon share"></span>
-      <span>Отправить реквизиты</span>
-    </button>
-  </div>
-</oreeption>
+
+    <div class="actions">
+      <button class="outline">
+        <span class="btn-icon share"></span>
+        <span>Отправить реквизиты</span>
+      </button>
+    </div>
+
   </div>
 </section>
 
-<!-- ===== QR MODAL (ДОБАВЛЕН, НИЧЕГО НЕ ЛОМАЕТ) ===== -->
 <div id="qrModal" class="qr-modal">
   <div class="qr-sheet">
     <div class="qr-header">
@@ -135,18 +127,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <div class="qr-content">
       <div class="qr-text">Покажите QR-код сотруднику</div>
-      <img
-        src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=yeahwww"
-        class="qr-image"
-        alt="QR"
-      >
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=yeahwww" class="qr-image">
       <div class="qr-subtext">или скажите код</div>
       <div class="qr-code">983517</div>
     </div>
   </div>
 </div>
 
-<!-- ===== ЗАГРУЗКА ФОТО ===== -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -170,7 +157,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<!-- ===== QR LOGIC (ТВОЙ ЖЕ JS) ===== -->
 <script>
 (function () {
   const showBtn = document.getElementById('showQrBtn');
@@ -179,14 +165,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!showBtn || !modal || !closeBtn) return;
 
-  showBtn.addEventListener('click', () => {
-    modal.classList.add('show');
-  });
-
-  closeBtn.addEventListener('click', () => {
-    modal.classList.remove('show');
-  });
-
+  showBtn.addEventListener('click', () => modal.classList.add('show'));
+  closeBtn.addEventListener('click', () => modal.classList.remove('show'));
   modal.addEventListener('click', e => {
     if (e.target === modal) modal.classList.remove('show');
   });
@@ -195,6 +175,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
-
 
 
