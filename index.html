@@ -124,5 +124,63 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 </section>
 
+<!-- QR MODAL -->
+<div id="qrModal" class="qr-modal">
+  <div class="qr-sheet">
+    <div class="qr-header">
+      <div class="qr-title">Удостоверение личности</div>
+      <button class="qr-close" id="closeQr">×</button>
+    </div>
+
+    <div class="qr-content">
+      <div class="qr-text">Покажите QR-код сотруднику</div>
+
+      <img
+        src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=yeahwww"
+        class="qr-image"
+        alt="QR"
+      />
+
+      <div class="qr-subtext">или скажите код</div>
+      <div class="qr-code">660829</div>
+    </div>
+  </div>
+</div>
+   
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* ===== ЗАГРУЗКА ФОТО ===== */
+  const uploadBtn = document.getElementById('uploadBtn');
+  const photoInput = document.getElementById('photo');
+  const preview = document.getElementById('preview');
+
+  uploadBtn.addEventListener('click', () => {
+    photoInput.click();
+  });
+
+  photoInput.addEventListener('change', () => {
+    const file = photoInput.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.innerHTML = `<img src="${e.target.result}">`;
+      uploadBtn.style.display = 'none';
+      localStorage.setItem('photo', e.target.result);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  const savedPhoto = localStorage.getItem('photo');
+  if (savedPhoto) {
+    preview.innerHTML = `<img src="${savedPhoto}">`;
+    uploadBtn.style.display = 'none';
+  }
+
+});
+</script>
+
 </body>
 </html>
+
