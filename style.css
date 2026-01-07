@@ -369,3 +369,9 @@ button {
 .copy-btn:active {
   transform: scale(0.9);
 }
+
+/* ===== FIX: ICONS VISIBILITY (НЕ МЕНЯЕТ ЛОГИКУ) ===== */
+.btn-icon {
+  display: block;
+  flex-shrink: 0;
+}
