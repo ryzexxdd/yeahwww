@@ -1,5 +1,7 @@
 // api/verify.js
-// Один код = одно устройство (Vercel Free, без БД)
+// Один код = одно устройство.
+
+const fs = require('fs/promises');
 
 const CODES = [
 "104583","127904","138662","149275","152849","163407","174296","185930","196742","207518",
@@ -22,31 +24,60 @@ const CODES = [
 "918642","929305","930874","941206","952839","963410","974526","985704","996318","107842"
 ];
 
-// временное хранилище привязок (на время жизни функции)
-const USED = {};
+const STORE_FILE = '/tmp/yeahwww-code-bindings.json';
+let memoryCache = null;
+
+async function readStore() {
+  if (memoryCache) {
+    return memoryCache;
+  }
+
+  try {
+    const content = await fs.readFile(STORE_FILE, 'utf8');
+    memoryCache = JSON.parse(content);
+  } catch {
+    memoryCache = {};
+  }
+
+  return memoryCache;
+}
+
+async function writeStore(store) {
+  memoryCache = store;
+  await fs.writeFile(STORE_FILE, JSON.stringify(store), 'utf8');
+}
 
 module.exports = async (req, res) => {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const { code, deviceId } = req.body || {};
 
   if (!code || !deviceId) {
-    return res.status(400).json({ error: "No data" });
+    return res.status(400).json({ error: 'No data' });
+  }
+
+  if (!/^\d{6}$/.test(code)) {
+    return res.status(400).json({ error: 'Код должен содержать 6 цифр' });
   }
 
   if (!CODES.includes(code)) {
-    return res.status(403).json({ error: "Неверный код" });
+    return res.status(403).json({ error: 'Неверный код' });
   }
 
-  // если код уже использован другим устройством
-  if (USED[code] && USED[code] !== deviceId) {
-    return res.status(403).json({ error: "Код уже использован" });
+  try {
+    const store = await readStore();
+
+    if (store[code] && store[code] !== deviceId) {
+      return res.status(403).json({ error: 'Код уже использован на другом устройстве' });
+    }
+
+    store[code] = deviceId;
+    await writeStore(store);
+
+    return res.json({ ok: true });
+  } catch {
+    return res.status(500).json({ error: 'Временная ошибка сервера' });
   }
-
-  // привязка код → устройство
-  USED[code] = deviceId;
-
-  return res.json({ ok: true });
 };
