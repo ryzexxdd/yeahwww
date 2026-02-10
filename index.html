@@ -20,31 +20,7 @@
 
 <body>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-
-  document.querySelectorAll('.tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(btn.dataset.tab).classList.add('active');
-    });
-  });
-
-  const fields = ['fio', 'iin', 'birth', 'docnum', 'issued', 'expiry'];
-  fields.forEach(id => {
-    const input = document.getElementById(id);
-    if (!input) return;
-    input.value = localStorage.getItem(id) || '';
-    input.addEventListener('input', () => {
-      localStorage.setItem(id, input.value);
-    });
-  });
-
-});
-</script>
-
+<!-- === ваш существующий header / tabs / screens (взято из оригинала) === -->
 <div class="header">
   <button class="back-btn" onclick="history.back()">‹</button>
   <div class="header-title">Удостоверение личности</div>
@@ -68,63 +44,22 @@ document.addEventListener('DOMContentLoaded', () => {
       <span>Предъявить документ</span>
     </button>
 
-    <button class="outline">
+    <button class="outline" id="enterCodeBtn">
       <span class="btn-icon share"></span>
-      <span>Отправить документ</span>
+      <span>Ввести код доступа</span>
     </button>
   </div>
 </section>
 
 <section id="req" class="screen">
   <div class="form">
-
-    <div class="field">
-      <label>ФИО</label>
-      <div class="copy-field">
-        <input id="fio" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww">
-        <button class="copy-btn" data-copy="fio"></button>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>ИИН</label>
-      <div class="copy-field">
-        <input id="iin" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww">
-        <button class="copy-btn" data-copy="iin"></button>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Дата рождения</label>
-      <div class="copy-field">
-        <input id="birth" type="text" class="field-text">
-        <button class="copy-btn" data-copy="birth"></button>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Номер документа</label>
-      <div class="copy-field">
-        <input id="docnum" type="text" class="field-text">
-        <button class="copy-btn" data-copy="docnum"></button>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Дата выдачи</label>
-      <div class="copy-field">
-        <input id="issued" type="text" class="field-text">
-        <button class="copy-btn" data-copy="issued"></button>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Срок действия</label>
-      <div class="copy-field">
-        <input id="expiry" type="text" class="field-text">
-        <button class="copy-btn" data-copy="expiry"></button>
-      </div>
-    </div>
+    <!-- поля (ваши) -->
+    <div class="field"><label>ФИО</label><div class="copy-field"><input id="fio" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww"><button class="copy-btn" data-copy="fio"></button></div></div>
+    <div class="field"><label>ИИН</label><div class="copy-field"><input id="iin" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww"><button class="copy-btn" data-copy="iin"></button></div></div>
+    <div class="field"><label>Дата рождения</label><div class="copy-field"><input id="birth" type="text" class="field-text"><button class="copy-btn" data-copy="birth"></button></div></div>
+    <div class="field"><label>Номер документа</label><div class="copy-field"><input id="docnum" type="text" class="field-text"><button class="copy-btn" data-copy="docnum"></button></div></div>
+    <div class="field"><label>Дата выдачи</label><div class="copy-field"><input id="issued" type="text" class="field-text"><button class="copy-btn" data-copy="issued"></button></div></div>
+    <div class="field"><label>Срок действия</label><div class="copy-field"><input id="expiry" type="text" class="field-text"><button class="copy-btn" data-copy="expiry"></button></div></div>
 
     <div class="actions">
       <button class="outline">
@@ -132,10 +67,10 @@ document.addEventListener('DOMContentLoaded', () => {
         <span>Отправить реквизиты</span>
       </button>
     </div>
-
   </div>
 </section>
 
+<!-- QR modal (ваш) -->
 <div id="qrModal" class="qr-modal">
   <div class="qr-sheet">
     <div class="qr-header">
@@ -145,15 +80,95 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <div class="qr-content">
       <div class="qr-text">Покажите QR-код сотруднику</div>
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=yeahwww" class="qr-image">
+      <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=yeahwww" class="qr-image">
       <div class="qr-subtext">или скажите код</div>
-      <div class="qr-code">983517</div>
+      <div class="qr-code" id="staticCode">983517</div>
+    </div>
+  </div>
+</div>
+
+<!-- === Новое: Ввод пользовательского кода доступа === -->
+<div id="codeModal" class="qr-modal">
+  <div class="qr-sheet">
+    <div class="qr-header">
+      <div class="qr-title">Вход по коду</div>
+      <button class="qr-close" id="closeCode">×</button>
+    </div>
+    <div class="qr-content">
+      <div class="qr-text">Введите ваш одноразовый код (6 цифр)</div>
+      <input id="accessCodeInput" type="text" inputmode="numeric" maxlength="6" style="font-size:22px;padding:10px;text-align:center;width:60%;margin:8px auto;display:block;border:1px solid #eee;border-radius:8px;">
+      <div id="codeStatus" style="margin-top:8px;color:#b00;"></div>
+      <div style="margin-top:12px;">
+        <button id="submitCodeBtn" class="primary">Подтвердить код</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- === Новое: Админ-логин (пароль) === -->
+<div id="adminModal" class="qr-modal">
+  <div class="qr-sheet">
+    <div class="qr-header">
+      <div class="qr-title">Панель администратора</div>
+      <button class="qr-close" id="closeAdmin">×</button>
+    </div>
+    <div class="qr-content">
+      <div class="qr-text">Введите пароль администратора</div>
+      <input id="adminPassInput" type="password" style="font-size:18px;padding:8px;width:80%;margin:8px auto;display:block;border:1px solid #eee;border-radius:8px;">
+      <div id="adminStatus" style="margin-top:8px;color:#b00;"></div>
+      <div style="margin-top:12px;">
+        <button id="adminLoginBtn" class="primary">Войти</button>
+      </div>
+
+      <div id="adminPanel" style="display:none;margin-top:12px;text-align:left;">
+        <p style="font-weight:600">Управление кодами</p>
+
+        <div style="margin-bottom:8px;">
+          <label>Добавить код вручную (6 цифр)</label>
+          <input id="manualCode" maxlength="6" inputmode="numeric" style="width:60%;padding:6px;border:1px solid #eee;border-radius:6px;">
+          <button id="addCodeBtn" class="outline" style="margin-left:8px;">Добавить</button>
+        </div>
+
+        <div style="margin-bottom:8px;">
+          <label>Сгенерировать N кодов</label>
+          <input id="genCount" type="number" value="10" min="1" style="width:80px;padding:6px;border:1px solid #eee;border-radius:6px;">
+          <button id="genBtn" class="outline" style="margin-left:8px;">Генерировать</button>
+        </div>
+
+        <div style="margin-top:12px;">
+          <button id="listCodesBtn" class="outline">Показать все коды (hashes)</button>
+          <button id="revokeBtn" class="outline" style="margin-left:8px;">Отключить код</button>
+        </div>
+
+        <pre id="codesList" style="max-height:220px;overflow:auto;background:#f7f7f7;padding:8px;border-radius:8px;margin-top:8px;"></pre>
+      </div>
+
     </div>
   </div>
 </div>
 
 <script>
+/* === сохранённый фронт: табы, фото, копирование, qr modal === */
 document.addEventListener('DOMContentLoaded', () => {
+
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  const fields = ['fio', 'iin', 'birth', 'docnum', 'issued', 'expiry'];
+  fields.forEach(id => {
+    const input = document.getElementById(id);
+    if (!input) return;
+    input.value = localStorage.getItem(id) || '';
+    input.addEventListener('input', () => {
+      localStorage.setItem(id, input.value);
+    });
+  });
 
   const uploadBtn = document.getElementById('uploadBtn');
   const photoInput = document.getElementById('photo');
@@ -172,57 +187,40 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.readAsDataURL(file);
   });
 
-});
-</script>
-
-<script>
-(function () {
   const showBtn = document.getElementById('showQrBtn');
   const modal = document.getElementById('qrModal');
   const closeBtn = document.getElementById('closeQr');
 
-  if (!showBtn || !modal || !closeBtn) return;
+  if (showBtn && modal && closeBtn) {
+    showBtn.addEventListener('click', () => modal.classList.add('show'));
+    closeBtn.addEventListener('click', () => modal.classList.remove('show'));
+    modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
+  }
 
-  showBtn.addEventListener('click', () => modal.classList.add('show'));
-  closeBtn.addEventListener('click', () => modal.classList.remove('show'));
-  modal.addEventListener('click', e => {
-    if (e.target === modal) modal.classList.remove('show');
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.copy-btn');
+    if (!btn) return;
+    const inputId = btn.dataset.copy;
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    navigator.clipboard.writeText(input.value || '');
+    btn.style.opacity = '0.5';
+    setTimeout(() => btn.style.opacity = '1', 300);
   });
-})();
-</script>
 
-<script>
-document.addEventListener('click', e => {
-  const btn = e.target.closest('.copy-btn');
-  if (!btn) return;
-
-  const inputId = btn.dataset.copy;
-  const input = document.getElementById(inputId);
-  if (!input) return;
-
-  navigator.clipboard.writeText(input.value || '');
-
-  btn.style.opacity = '0.5';
-  setTimeout(() => btn.style.opacity = '1', 300);
-});
-</script>
-
-<script>
-document.addEventListener('click', e => {
-  const btn = e.target.closest('.outline');
-  if (!btn) return;
-  if (!btn.textContent.includes('Отправить реквизиты')) return;
-
-  const data = {
-    fio: document.getElementById('fio')?.value || '',
-    iin: document.getElementById('iin')?.value || '',
-    birth: document.getElementById('birth')?.value || '',
-    docnum: document.getElementById('docnum')?.value || '',
-    issued: document.getElementById('issued')?.value || '',
-    expiry: document.getElementById('expiry')?.value || ''
-  };
-
-  const text =
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.outline');
+    if (!btn) return;
+    if (!btn.textContent.includes('Отправить реквизиты')) return;
+    const data = {
+      fio: document.getElementById('fio')?.value || '',
+      iin: document.getElementById('iin')?.value || '',
+      birth: document.getElementById('birth')?.value || '',
+      docnum: document.getElementById('docnum')?.value || '',
+      issued: document.getElementById('issued')?.value || '',
+      expiry: document.getElementById('expiry')?.value || ''
+    };
+    const text =
 `Удостоверение личности
 
 ФИО: ${data.fio}
@@ -231,19 +229,161 @@ document.addEventListener('click', e => {
 Номер документа: ${data.docnum}
 Дата выдачи: ${data.issued}
 Срок действия: ${data.expiry}`;
+    if (navigator.share) {
+      navigator.share({ title: 'Реквизиты документа', text });
+    } else {
+      navigator.clipboard.writeText(text);
+      alert('Реквизиты скопированы');
+    }
+  });
 
-  if (navigator.share) {
-    navigator.share({ title: 'Реквизиты документа', text });
-  } else {
-    navigator.clipboard.writeText(text);
-    alert('Реквизиты скопированы');
-  }
 });
+</script>
+
+<script>
+/* === утилиты: deviceId, modal контролы, ввод кода и API вызовы === */
+
+function getDeviceId(){
+  let id = localStorage.getItem('device_id_v1');
+  if(!id){
+    // простая UUID (если браузер поддерживает)
+    if(window.crypto && crypto.randomUUID) id = crypto.randomUUID();
+    else id = 'd-' + Date.now() + '-' + Math.floor(Math.random()*1e6);
+    localStorage.setItem('device_id_v1', id);
+  }
+  return id;
+}
+
+(function(){
+  const enterBtn = document.getElementById('enterCodeBtn');
+  const codeModal = document.getElementById('codeModal');
+  const closeCode = document.getElementById('closeCode');
+  const submitCodeBtn = document.getElementById('submitCodeBtn');
+  const codeInput = document.getElementById('accessCodeInput');
+  const statusEl = document.getElementById('codeStatus');
+
+  if(enterBtn){
+    enterBtn.addEventListener('click', () => {
+      codeInput.value = '';
+      statusEl.textContent = '';
+      codeModal.classList.add('show');
+    });
+  }
+  closeCode.addEventListener('click', () => codeModal.classList.remove('show'));
+  codeModal.addEventListener('click', e => { if (e.target === codeModal) codeModal.classList.remove('show'); });
+
+  submitCodeBtn.addEventListener('click', async () => {
+    const code = (codeInput.value || '').trim();
+    if(!/^\d{6}$/.test(code)){ statusEl.textContent = 'Код должен быть 6 цифр'; return; }
+    statusEl.textContent = 'Проверка...';
+    const deviceId = getDeviceId();
+    try {
+      const res = await fetch('/api/verify', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ code, deviceId })
+      });
+      const json = await res.json();
+      if(res.ok && json.ok){
+        statusEl.style.color = '#0a0';
+        statusEl.textContent = 'Код принят — доступ разрешён';
+        setTimeout(()=> codeModal.classList.remove('show'), 800);
+      } else {
+        statusEl.style.color = '#b00';
+        statusEl.textContent = json.error || 'Ошибка проверки';
+      }
+    } catch(e){
+      statusEl.style.color = '#b00';
+      statusEl.textContent = 'Ошибка сети';
+    }
+  });
+})();
+
+/* === админ-модал === */
+(function(){
+  const adminModal = document.getElementById('adminModal');
+  const openAdminBtn = document.createElement('button');
+  openAdminBtn.className = 'tab';
+  openAdminBtn.style.position = 'fixed';
+  openAdminBtn.style.right = '12px';
+  openAdminBtn.style.bottom = '12px';
+  openAdminBtn.style.zIndex = '999';
+  openAdminBtn.style.background = '#2b6bcc';
+  openAdminBtn.style.color = '#fff';
+  openAdminBtn.textContent = 'Admin';
+  document.body.appendChild(openAdminBtn);
+
+  openAdminBtn.addEventListener('click', () => {
+    document.getElementById('adminPassInput').value = '';
+    document.getElementById('adminStatus').textContent = '';
+    document.getElementById('adminPanel').style.display='none';
+    adminModal.classList.add('show');
+  });
+
+  document.getElementById('closeAdmin').addEventListener('click', () => adminModal.classList.remove('show'));
+  adminModal.addEventListener('click', e => { if (e.target === adminModal) adminModal.classList.remove('show'); });
+
+  async function apiAdmin(body){
+    const res = await fetch('/api/admin', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    return res.json().then(j => ({ ok: res.ok, json:j }));
+  }
+
+  document.getElementById('adminLoginBtn').addEventListener('click', async () => {
+    const pass = document.getElementById('adminPassInput').value || '';
+    document.getElementById('adminStatus').textContent = 'Проверка...';
+    const r = await apiAdmin({ action:'auth', password:pass });
+    if(r.ok && r.json.ok){
+      document.getElementById('adminStatus').style.color = '#0a0';
+      document.getElementById('adminStatus').textContent = 'Вход выполнен';
+      document.getElementById('adminPanel').style.display='block';
+      // сохранить токен в sessionStorage (простая сессия)
+      sessionStorage.setItem('admin_token', r.json.token);
+    } else {
+      document.getElementById('adminStatus').style.color = '#b00';
+      document.getElementById('adminStatus').textContent = r.json.error || 'Ошибка';
+    }
+  });
+
+  document.getElementById('addCodeBtn').addEventListener('click', async () => {
+    const code = (document.getElementById('manualCode').value||'').trim();
+    if(!/^\d{6}$/.test(code)){ alert('Нужно 6 цифр'); return; }
+    const token = sessionStorage.getItem('admin_token')||'';
+    const r = await apiAdmin({ action:'add', token, code });
+    if(r.ok && r.json.ok) { alert('Добавлен'); document.getElementById('manualCode').value=''; }
+    else alert(r.json.error || 'Ошибка');
+  });
+
+  document.getElementById('genBtn').addEventListener('click', async () => {
+    const n = parseInt(document.getElementById('genCount').value||'10',10);
+    const token = sessionStorage.getItem('admin_token')||'';
+    const r = await apiAdmin({ action:'generate', token, count: n });
+    if(r.ok && r.json.ok) alert('Сгенерировано: ' + (r.json.generated || []).join(', '));
+    else alert(r.json.error || 'Ошибка');
+  });
+
+  document.getElementById('listCodesBtn').addEventListener('click', async () => {
+    const token = sessionStorage.getItem('admin_token')||'';
+    const r = await apiAdmin({ action:'list', token });
+    if(r.ok && r.json.ok){
+      document.getElementById('codesList').textContent = JSON.stringify(r.json.codes, null, 2);
+    } else alert(r.json.error || 'Ошибка');
+  });
+
+  document.getElementById('revokeBtn').addEventListener('click', async () => {
+    const to = prompt('Введите код (6 цифр) для отключения:');
+    if(!to) return;
+    const token = sessionStorage.getItem('admin_token')||'';
+    const r = await apiAdmin({ action:'revoke', token, code: to.trim() });
+    if(r.ok && r.json.ok) alert('Отключено');
+    else alert(r.json.error || 'Ошибка');
+  });
+
+})();
 </script>
 
 </body>
 </html>
-
-</body>
-</html>
-
