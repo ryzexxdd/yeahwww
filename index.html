@@ -13,274 +13,260 @@
   <link rel="manifest" href="manifest.json">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
-  <link rel="apple-touch-icon" sizes="167x167" href="/icon-167.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="/icon-152.png">
-  <link rel="apple-touch-icon" href="/icon-512.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="icon-167.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
+  <link rel="apple-touch-icon" href="icon-512.png">
 </head>
+
 <body>
-  <div id="gateOverlay">
-    <div class="gateCard">
-      <div class="gateTitle">Получение доступа</div>
-      <div class="gateSubtitle">Введите одноразовый код</div>
-      <input id="gateCode" class="codeInput" maxlength="6" placeholder="XXXXXX" inputmode="numeric" />
-      <button id="gateBtn" class="btnPrimary" type="button">Подтвердить код</button>
-      <div id="gateMsg" class="gateMsg"></div>
-      <a class="btnTelegram" href="https://t.me/yeahwww" target="_blank" rel="noopener noreferrer">Написать в Telegram</a>
+<div class="header">
+  <button class="back-btn" onclick="history.back()">‹</button>
+  <div class="header-title">Удостоверение личности</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-tab="doc">Документ</button>
+  <button class="tab" data-tab="req">Реквизиты</button>
+</div>
+
+<section id="doc" class="screen active">
+  <div class="photo-area">
+    <button id="uploadBtn" class="upload-btn">Загрузить фото</button>
+    <input type="file" id="photo" accept="image/*" hidden>
+    <div id="preview"></div>
+  </div>
+
+  <div class="actions">
+    <button class="primary" id="showQrBtn">
+      <span class="btn-icon qr"></span>
+      <span>Предъявить документ</span>
+    </button>
+
+    <button class="outline">
+      <span class="btn-icon share"></span>
+      <span>Отправить документ</span>
+    </button>
+  </div>
+</section>
+
+<section id="req" class="screen">
+  <div class="form">
+    <div class="field">
+      <label>ФИО</label>
+      <div class="copy-field">
+        <input id="fio" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww">
+        <button class="copy-btn" data-copy="fio"></button>
+      </div>
     </div>
-  </div>
 
-  <div class="header">
-    <button class="back-btn" onclick="history.back()">‹</button>
-    <div class="header-title">Удостоверение личности</div>
-  </div>
+    <div class="field">
+      <label>ИИН</label>
+      <div class="copy-field">
+        <input id="iin" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww">
+        <button class="copy-btn" data-copy="iin"></button>
+      </div>
+    </div>
 
-  <div class="tabs">
-    <button class="tab active" data-tab="doc" type="button">Документ</button>
-    <button class="tab" data-tab="req" type="button">Реквизиты</button>
-  </div>
+    <div class="field">
+      <label>Дата рождения</label>
+      <div class="copy-field">
+        <input id="birth" type="text" class="field-text">
+        <button class="copy-btn" data-copy="birth"></button>
+      </div>
+    </div>
 
-  <section id="doc" class="screen active">
-    <div class="photo-area">
-      <button id="uploadBtn" class="upload-btn" type="button">Загрузить фото</button>
-      <input type="file" id="photo" accept="image/*" hidden>
-      <div id="preview"></div>
+    <div class="field">
+      <label>Номер документа</label>
+      <div class="copy-field">
+        <input id="docnum" type="text" class="field-text">
+        <button class="copy-btn" data-copy="docnum"></button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Дата выдачи</label>
+      <div class="copy-field">
+        <input id="issued" type="text" class="field-text">
+        <button class="copy-btn" data-copy="issued"></button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Срок действия</label>
+      <div class="copy-field">
+        <input id="expiry" type="text" class="field-text">
+        <button class="copy-btn" data-copy="expiry"></button>
+      </div>
     </div>
 
     <div class="actions">
-      <button class="primary" id="showQrBtn" type="button">
-        <span class="btn-icon qr"></span>
-        <span>Предъявить документ</span>
-      </button>
-
-      <button class="outline" type="button">
+      <button class="outline" id="shareReqBtn">
         <span class="btn-icon share"></span>
-        <span>Отправить документ</span>
+        <span>Отправить реквизиты</span>
       </button>
-    </div>
-  </section>
-
-  <section id="req" class="screen">
-    <div class="form">
-      <div class="field">
-        <label>ФИО</label>
-        <div class="copy-field">
-          <input id="fio" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww">
-          <button class="copy-btn" data-copy="fio" type="button" aria-label="Копировать ФИО"></button>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>ИИН</label>
-        <div class="copy-field">
-          <input id="iin" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww">
-          <button class="copy-btn" data-copy="iin" type="button" aria-label="Копировать ИИН"></button>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Дата рождения</label>
-        <div class="copy-field">
-          <input id="birth" type="text" class="field-text">
-          <button class="copy-btn" data-copy="birth" type="button" aria-label="Копировать дату рождения"></button>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Номер документа</label>
-        <div class="copy-field">
-          <input id="docnum" type="text" class="field-text">
-          <button class="copy-btn" data-copy="docnum" type="button" aria-label="Копировать номер документа"></button>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Дата выдачи</label>
-        <div class="copy-field">
-          <input id="issued" type="text" class="field-text">
-          <button class="copy-btn" data-copy="issued" type="button" aria-label="Копировать дату выдачи"></button>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Срок действия</label>
-        <div class="copy-field">
-          <input id="expiry" type="text" class="field-text">
-          <button class="copy-btn" data-copy="expiry" type="button" aria-label="Копировать срок действия"></button>
-        </div>
-      </div>
-
-      <div class="actions">
-        <button class="outline" type="button">
-          <span class="btn-icon share"></span>
-          <span>Отправить реквизиты</span>
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <div id="qrModal" class="qr-modal">
-    <div class="qr-sheet">
-      <div class="qr-header">
-        <div class="qr-title">Удостоверение личности</div>
-        <button class="qr-close" id="closeQr" type="button">×</button>
-      </div>
-
-      <div class="qr-content">
-        <div class="qr-text">Покажите QR-код сотруднику</div>
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=yeahwww" class="qr-image" alt="QR код">
-        <div class="qr-subtext">или скажите код</div>
-        <div class="qr-code">983517</div>
-      </div>
     </div>
   </div>
+</section>
 
-  <script>
-    function getDeviceId() {
-      let id = localStorage.getItem('device_id_server');
-      if (!id) {
-        id = crypto.randomUUID ? crypto.randomUUID() : `dev-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-        localStorage.setItem('device_id_server', id);
-      }
-      return id;
-    }
+<div id="qrModal" class="qr-modal">
+  <div class="qr-sheet">
+    <div class="qr-header">
+      <div class="qr-title">Удостоверение личности</div>
+      <button class="qr-close" id="closeQr">×</button>
+    </div>
 
-    function openApp() {
-      const overlay = document.getElementById('gateOverlay');
-      if (overlay) {
-        overlay.remove();
-      }
-      document.body.classList.remove('app-locked');
-    }
+    <div class="qr-content">
+      <div class="qr-text">Покажите QR-код сотруднику</div>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=yeahwww" class="qr-image" alt="QR-код">
+      <div class="qr-subtext">или скажите код</div>
+      <div class="qr-code">983517</div>
+    </div>
+  </div>
+</div>
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const overlay = document.getElementById('gateOverlay');
-      const btn = document.getElementById('gateBtn');
-      const input = document.getElementById('gateCode');
-      const msg = document.getElementById('gateMsg');
+<div id="gateOverlay" class="gate-overlay">
+  <div class="gate-card">
+    <div class="gate-title">Получение доступа</div>
+    <div class="gate-subtitle">Введите код доступа</div>
 
-      if (localStorage.getItem('site_access_granted_server') === '1') {
-        openApp();
-      }
+    <input id="gateCode" class="code-input" maxlength="6" inputmode="numeric" placeholder="XXXXXX">
+    <button id="gateBtn" class="gate-btn">Подтвердить код</button>
+    <div id="gateMsg" class="gate-msg"></div>
+  </div>
+</div>
 
-      btn?.addEventListener('click', async () => {
-        const code = input.value.trim();
-
-        if (!/^\d{6}$/.test(code)) {
-          msg.textContent = 'Введите 6 цифр';
-          return;
-        }
-
-        btn.disabled = true;
-        msg.textContent = 'Проверка...';
-
-        try {
-          const res = await fetch('/api/verify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code, deviceId: getDeviceId() })
-          });
-
-          const data = await res.json();
-
-          if (res.ok && data.ok) {
-            localStorage.setItem('site_access_granted_server', '1');
-            openApp();
-            return;
-          }
-
-          msg.textContent = data.error || 'Неверный код';
-        } catch (error) {
-          msg.textContent = 'Ошибка сети, попробуйте снова';
-        } finally {
-          btn.disabled = false;
-        }
-      });
-
-      document.querySelectorAll('.tab').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-          document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-          btn.classList.add('active');
-          document.getElementById(btn.dataset.tab).classList.add('active');
-        });
-      });
-
-      const fields = ['fio', 'iin', 'birth', 'docnum', 'issued', 'expiry'];
-      fields.forEach(id => {
-        const input = document.getElementById(id);
-        if (!input) return;
-
-        input.value = localStorage.getItem(id) || '';
-        input.addEventListener('input', () => {
-          localStorage.setItem(id, input.value);
-        });
-      });
-
-      const uploadBtn = document.getElementById('uploadBtn');
-      const photoInput = document.getElementById('photo');
-      const preview = document.getElementById('preview');
-
-      uploadBtn?.addEventListener('click', () => photoInput.click());
-
-      photoInput?.addEventListener('change', () => {
-        const file = photoInput.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = e => {
-          preview.innerHTML = `<img src="${e.target.result}" alt="Загруженное фото">`;
-          uploadBtn.style.display = 'none';
-        };
-        reader.readAsDataURL(file);
-      });
-
-      const showBtn = document.getElementById('showQrBtn');
-      const modal = document.getElementById('qrModal');
-      const closeBtn = document.getElementById('closeQr');
-
-      showBtn?.addEventListener('click', () => modal.classList.add('show'));
-      closeBtn?.addEventListener('click', () => modal.classList.remove('show'));
-      modal?.addEventListener('click', e => {
-        if (e.target === modal) modal.classList.remove('show');
-      });
-
-      document.addEventListener('click', async e => {
-        const copyBtn = e.target.closest('.copy-btn');
-        if (copyBtn) {
-          const inputId = copyBtn.dataset.copy;
-          const field = document.getElementById(inputId);
-          if (!field) return;
-
-          await navigator.clipboard.writeText(field.value || '');
-          copyBtn.style.opacity = '0.5';
-          setTimeout(() => {
-            copyBtn.style.opacity = '1';
-          }, 300);
-          return;
-        }
-
-        const shareBtn = e.target.closest('.outline');
-        if (!shareBtn || !shareBtn.textContent.includes('Отправить реквизиты')) return;
-
-        const data = {
-          fio: document.getElementById('fio')?.value || '',
-          iin: document.getElementById('iin')?.value || '',
-          birth: document.getElementById('birth')?.value || '',
-          docnum: document.getElementById('docnum')?.value || '',
-          issued: document.getElementById('issued')?.value || '',
-          expiry: document.getElementById('expiry')?.value || ''
-        };
-
-        const text = `Удостоверение личности\n\nФИО: ${data.fio}\nИИН: ${data.iin}\nДата рождения: ${data.birth}\nНомер документа: ${data.docnum}\nДата выдачи: ${data.issued}\nСрок действия: ${data.expiry}`;
-
-        if (navigator.share) {
-          navigator.share({ title: 'Реквизиты документа', text });
-        } else {
-          await navigator.clipboard.writeText(text);
-          alert('Реквизиты скопированы');
-        }
-      });
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
     });
-  </script>
+  });
+
+  const fields = ['fio', 'iin', 'birth', 'docnum', 'issued', 'expiry'];
+  fields.forEach(id => {
+    const input = document.getElementById(id);
+    if (!input) return;
+    input.value = localStorage.getItem(id) || '';
+    input.addEventListener('input', () => {
+      localStorage.setItem(id, input.value);
+    });
+  });
+
+  const uploadBtn = document.getElementById('uploadBtn');
+  const photoInput = document.getElementById('photo');
+  const preview = document.getElementById('preview');
+
+  uploadBtn.addEventListener('click', () => photoInput.click());
+
+  photoInput.addEventListener('change', () => {
+    const file = photoInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.innerHTML = `<img src="${e.target.result}" style="width:100%;border-radius:14px;">`;
+      uploadBtn.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  const showBtn = document.getElementById('showQrBtn');
+  const modal = document.getElementById('qrModal');
+  const closeBtn = document.getElementById('closeQr');
+
+  showBtn.addEventListener('click', () => modal.classList.add('show'));
+  closeBtn.addEventListener('click', () => modal.classList.remove('show'));
+  modal.addEventListener('click', e => {
+    if (e.target === modal) modal.classList.remove('show');
+  });
+
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.copy-btn');
+    if (!btn) return;
+
+    const inputId = btn.dataset.copy;
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    navigator.clipboard.writeText(input.value || '');
+
+    btn.style.opacity = '0.5';
+    setTimeout(() => {
+      btn.style.opacity = '1';
+    }, 300);
+  });
+
+  const shareReqBtn = document.getElementById('shareReqBtn');
+  shareReqBtn.addEventListener('click', () => {
+    const data = {
+      fio: document.getElementById('fio')?.value || '',
+      iin: document.getElementById('iin')?.value || '',
+      birth: document.getElementById('birth')?.value || '',
+      docnum: document.getElementById('docnum')?.value || '',
+      issued: document.getElementById('issued')?.value || '',
+      expiry: document.getElementById('expiry')?.value || ''
+    };
+
+    const text = `Удостоверение личности\n\nФИО: ${data.fio}\nИИН: ${data.iin}\nДата рождения: ${data.birth}\nНомер документа: ${data.docnum}\nДата выдачи: ${data.issued}\nСрок действия: ${data.expiry}`;
+
+    if (navigator.share) {
+      navigator.share({ title: 'Реквизиты документа', text });
+    } else {
+      navigator.clipboard.writeText(text);
+      alert('Реквизиты скопированы');
+    }
+  });
+
+  function getDeviceId() {
+    let id = localStorage.getItem('device_id_server');
+    if (!id) {
+      id = crypto.randomUUID ? crypto.randomUUID() : `dev-${Date.now()}`;
+      localStorage.setItem('device_id_server', id);
+    }
+    return id;
+  }
+
+  const overlay = document.getElementById('gateOverlay');
+  const gateBtn = document.getElementById('gateBtn');
+  const gateInput = document.getElementById('gateCode');
+  const gateMsg = document.getElementById('gateMsg');
+
+  if (localStorage.getItem('site_access_granted_server') === '1') {
+    overlay.remove();
+  }
+
+  gateBtn.addEventListener('click', async () => {
+    const code = gateInput.value.trim();
+    if (!/^\d{6}$/.test(code)) {
+      gateMsg.textContent = 'Введите 6 цифр';
+      return;
+    }
+
+    gateMsg.textContent = 'Проверка...';
+
+    try {
+      const res = await fetch('/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, deviceId: getDeviceId() })
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.ok) {
+        localStorage.setItem('site_access_granted_server', '1');
+        overlay.remove();
+      } else {
+        gateMsg.textContent = data.error || 'Неверный код';
+      }
+    } catch (error) {
+      gateMsg.textContent = 'Ошибка сети, попробуйте снова';
+    }
+  });
+});
+</script>
 </body>
 </html>
