@@ -18,7 +18,7 @@
   <link rel="apple-touch-icon" href="icon-512.png">
 
   <style>
-    /* Быстрые стили для модального окна доступа (не трогают основной style.css) */
+    /* Быстрые стили для модального окна доступа */
     #gateOverlay{
       position:fixed; inset:0; background:#f6f6f7; z-index:9999; display:flex; align-items:flex-start; justify-content:center;
       padding-top:36px; font-family:inherit;
@@ -35,6 +35,7 @@
     }
     .btnPrimary{
       display:inline-block; background:#111; color:#fff; padding:12px 18px; border-radius:12px; margin-top:12px; font-weight:700;
+      border: none; cursor: pointer;
     }
     .btnTelegram{
       display:block; margin:14px auto 0; background:#0a84ff; color:#fff; padding:12px 18px; border-radius:12px; text-decoration:none; width:85%; max-width:340px;
@@ -65,10 +66,8 @@
   </div>
 </div>
 
-<!-- === основной контент (оставлен ваш оригинал, слегка сокращён для компактности) === -->
-
+<!-- Основной контент (ваш сайт) -->
 <div id="mainSite" style="display:none;">
-  <!-- ваш оригинальный контент (скопирован из прежнего index.html) -->
   <div class="header">
     <button class="back-btn" onclick="history.back()">‹</button>
     <div class="header-title">Удостоверение личности</div>
@@ -117,7 +116,6 @@
     </div>
   </section>
 
-  <!-- QR modal (как в оригинале) -->
   <div id="qrModal" class="qr-modal" style="display:none;">
     <div class="qr-sheet">
       <div class="qr-header">
@@ -132,12 +130,10 @@
       </div>
     </div>
   </div>
-
-  <!-- остальные скрипты вашего сайта (копия логики табов, фото и т.д.) -->
 </div>
 
 <script>
-/* ========== 200 plain codes (тот же список, что вы генерировали) ========== */
+/* ========== 200 plain codes (вставлены прямо в клиент) ========== */
 const validCodes = [
 "885440","403958","794772","933488","441001","042450","271493","536110","509532","424604",
 "962838","821872","870163","318046","499748","375441","611720","934973","952225","229053",
@@ -162,14 +158,60 @@ const validCodes = [
 ];
 /* ====================================================================== */
 
+/* --- device id utilities --- */
+function generateUUIDv4(){
+  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  // fallback
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+function getDeviceId(){
+  let id = localStorage.getItem('device_id_v2');
+  if(!id){
+    id = 'dev-' + generateUUIDv4();
+    localStorage.setItem('device_id_v2', id);
+  }
+  return id;
+}
+
+/* --- bindings storage (code -> deviceId) --- */
+function getCodeBindings(){
+  try {
+    return JSON.parse(localStorage.getItem('code_bindings_v2') || '{}');
+  } catch(e){
+    return {};
+  }
+}
+function saveCodeBindings(obj){
+  localStorage.setItem('code_bindings_v2', JSON.stringify(obj));
+}
+
+/* --- reverse map (deviceId -> code) --- */
+function getDeviceBindings(){
+  try {
+    return JSON.parse(localStorage.getItem('device_bindings_v2') || '{}');
+  } catch(e){
+    return {};
+  }
+}
+function saveDeviceBindings(obj){
+  localStorage.setItem('device_bindings_v2', JSON.stringify(obj));
+}
+
+/* --- UI elements --- */
 const gateOverlay = document.getElementById('gateOverlay');
 const gateCodeInput = document.getElementById('gateCode');
 const gateSubmitBtn = document.getElementById('gateSubmit');
 const gateMsg = document.getElementById('gateMsg');
 const mainSite = document.getElementById('mainSite');
 
-// Если ранее пользователь уже получил доступ — сразу показываем сайт
-if(localStorage.getItem('site_access_granted') === '1'){
+// проверяем привязку устройства — если устройство уже связано с кодом, показываем сайт
+const deviceId = getDeviceId();
+const deviceBindings = getDeviceBindings();
+if(deviceBindings[deviceId]){
   gateOverlay.style.display = 'none';
   mainSite.style.display = '';
 } else {
@@ -177,35 +219,59 @@ if(localStorage.getItem('site_access_granted') === '1'){
   mainSite.style.display = 'none';
 }
 
-// Удобство: Enter = Submit
+// Enter = submit
 gateCodeInput.addEventListener('keydown', (e) => {
   if(e.key === 'Enter') gateSubmitBtn.click();
 });
 
 gateSubmitBtn.addEventListener('click', () => {
-  const c = (gateCodeInput.value || '').trim();
-  if(!/^\d{6}$/.test(c)){
+  const code = (gateCodeInput.value || '').trim();
+  const devId = getDeviceId();
+
+  if(!/^\d{6}$/.test(code)){
     gateMsg.style.color = '#b00';
     gateMsg.textContent = 'Код должен быть 6 цифр';
     return;
   }
-  // проверка по массиву (client-side)
-  if(validCodes.indexOf(c) !== -1){
-    // Успех: пометить в localStorage и показать сайт
-    localStorage.setItem('site_access_granted', '1');
-    gateOverlay.style.display = 'none';
-    mainSite.style.display = '';
-    gateMsg.style.color = '#0a0';
-    gateMsg.textContent = 'Код принят — доступ разрешён';
-    // опционально: можно удалить код из массива (для фронта) чтобы один код нельзя было использовать повторно в этом браузере
-    // но это не защищено на клиенте — на реальном сервере нужно блокировать код на бэке
-  } else {
+
+  if(!validCodes.includes(code)){
     gateMsg.style.color = '#b00';
     gateMsg.textContent = 'Неправильный код';
+    return;
   }
+
+  const cBindings = getCodeBindings();       // code -> deviceId
+  const dBindings = getDeviceBindings();     // deviceId -> code
+
+  // Если это устройство уже привязано к другому коду — запрещаем
+  if(dBindings[devId] && dBindings[devId] !== code){
+    gateMsg.style.color = '#b00';
+    gateMsg.textContent = 'Это устройство уже привязано к другому коду';
+    return;
+  }
+
+  // Если код уже привязан к другому устройству — запрещаем
+  if(cBindings[code] && cBindings[code] !== devId){
+    gateMsg.style.color = '#b00';
+    gateMsg.textContent = 'Код уже использован на другом устройстве';
+    return;
+  }
+
+  // Привязываем код к устройству (если не привязан)
+  cBindings[code] = devId;
+  dBindings[devId] = code;
+  saveCodeBindings(cBindings);
+  saveDeviceBindings(dBindings);
+
+  // Разрешаем доступ
+  localStorage.setItem('site_access_granted_v2', '1');
+  gateOverlay.style.display = 'none';
+  mainSite.style.display = '';
+  gateMsg.style.color = '#0a0';
+  gateMsg.textContent = 'Код принят — доступ разрешён';
 });
 
-/* --- Оставляем остальную логику вашего сайта (табы, фото, qr modal) --- */
+/* --- Оставляем логику сайта: табы, загрузка фото, QR --- */
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.tab').forEach(btn => {
     btn.addEventListener('click', () => {
