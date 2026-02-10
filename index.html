@@ -1,54 +1,27 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta name="theme-color" content="#ffffff">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta charset="UTF-8"> 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>yeahwww</title>
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>yeahwww — доступ</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
-  <link rel="apple-touch-icon" sizes="167x167" href="icon-167.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
-  <link rel="apple-touch-icon" href="icon-512.png">
-
   <style>
-    /* Быстрые стили для модального окна доступа */
-    #gateOverlay{
-      position:fixed; inset:0; background:#f6f6f7; z-index:9999; display:flex; align-items:flex-start; justify-content:center;
-      padding-top:36px; font-family:inherit;
-    }
-    .gateCard{
-      width:94%; max-width:420px; background:#fff; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.08);
-      padding:22px; text-align:center;
-    }
+    /* стили модального окна — не трогают основной CSS */
+    #gateOverlay{position:fixed;inset:0;background:#f6f6f7;z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding-top:36px;font-family:inherit;}
+    .gateCard{width:94%;max-width:420px;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08);padding:22px;text-align:center;}
     .gateTitle{font-size:22px;font-weight:700;margin:10px 0 6px;}
     .gateSubtitle{color:#6b6b6b;margin-bottom:14px;}
-    .codeInput{
-      width:80%; max-width:320px; margin:10px auto; font-size:22px; text-align:center;
-      padding:12px 14px; border-radius:12px; border:1px solid #eee; display:block;
-    }
-    .btnPrimary{
-      display:inline-block; background:#111; color:#fff; padding:12px 18px; border-radius:12px; margin-top:12px; font-weight:700;
-      border: none; cursor: pointer;
-    }
-    .btnTelegram{
-      display:block; margin:14px auto 0; background:#0a84ff; color:#fff; padding:12px 18px; border-radius:12px; text-decoration:none; width:85%; max-width:340px;
-    }
+    .codeInput{width:80%;max-width:320px;margin:10px auto;font-size:22px;text-align:center;padding:12px 14px;border-radius:12px;border:1px solid #eee;display:block;}
+    .btnPrimary{display:inline-block;background:#111;color:#fff;padding:12px 18px;border-radius:12px;margin-top:12px;font-weight:700;border:none;cursor:pointer;}
+    .btnTelegram{display:block;margin:14px auto 0;background:#0a84ff;color:#fff;padding:12px 18px;border-radius:12px;text-decoration:none;width:85%;max-width:340px;}
     .gateMsg{color:#b00;margin-top:10px;min-height:20px;}
     .smallHint{color:#9b9b9b;margin-top:10px;font-size:13px;}
-    .logoSmall{height:44px; display:block; margin:0 auto 6px;}
+    .logoSmall{height:44px;display:block;margin:0 auto 6px;}
   </style>
 </head>
-
 <body>
 
-<!-- Gate overlay: показывается сразу -->
+<!-- Gate overlay -->
 <div id="gateOverlay" aria-hidden="false">
   <div class="gateCard" role="dialog" aria-modal="true" aria-label="Получение доступа">
     <img class="logoSmall" src="icon-180.png" alt="logo">
@@ -56,270 +29,78 @@
     <div class="gateSubtitle">Введите одноразовый код (6 цифр), который вы получили у администратора.</div>
 
     <input id="gateCode" class="codeInput" inputmode="numeric" maxlength="6" placeholder="XXXXXX" autofocus>
-
     <button id="gateSubmit" class="btnPrimary">Подтвердить код</button>
-
     <div id="gateMsg" class="gateMsg"></div>
-
     <div class="smallHint">Нет кода — напишите в Telegram для получения доступа</div>
     <a id="tgLink" class="btnTelegram" href="https://t.me/yeahwww" target="_blank" rel="noopener">Написать в Telegram</a>
   </div>
 </div>
 
-<!-- Основной контент (ваш сайт) -->
+<!-- основной сайт (скрыт до успешного входа) -->
 <div id="mainSite" style="display:none;">
-  <div class="header">
-    <button class="back-btn" onclick="history.back()">‹</button>
-    <div class="header-title">Удостоверение личности</div>
-  </div>
-
-  <div class="tabs">
-    <button class="tab active" data-tab="doc">Документ</button>
-    <button class="tab" data-tab="req">Реквизиты</button>
-  </div>
-
-  <section id="doc" class="screen active">
-    <div class="photo-area">
-      <button id="uploadBtn" class="upload-btn">Загрузить фото</button>
-      <input type="file" id="photo" accept="image/*" hidden>
-      <div id="preview"></div>
-    </div>
-
-    <div class="actions">
-      <button class="primary" id="showQrBtn">
-        <span class="btn-icon qr"></span>
-        <span>Предъявить документ</span>
-      </button>
-
-      <button class="outline" id="enterCodeBtn" style="display:none;">
-        <span class="btn-icon share"></span>
-        <span>Ввести код доступа</span>
-      </button>
-    </div>
-  </section>
-
-  <section id="req" class="screen">
-    <div class="form">
-      <div class="field"><label>ФИО</label><div class="copy-field"><input id="fio" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww"><button class="copy-btn" data-copy="fio"></button></div></div>
-      <div class="field"><label>ИИН</label><div class="copy-field"><input id="iin" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww"><button class="copy-btn" data-copy="iin"></button></div></div>
-      <div class="field"><label>Дата рождения</label><div class="copy-field"><input id="birth" type="text" class="field-text"><button class="copy-btn" data-copy="birth"></button></div></div>
-      <div class="field"><label>Номер документа</label><div class="copy-field"><input id="docnum" type="text" class="field-text"><button class="copy-btn" data-copy="docnum"></button></div></div>
-      <div class="field"><label>Дата выдачи</label><div class="copy-field"><input id="issued" type="text" class="field-text"><button class="copy-btn" data-copy="issued"></button></div></div>
-      <div class="field"><label>Срок действия</label><div class="copy-field"><input id="expiry" type="text" class="field-text"><button class="copy-btn" data-copy="expiry"></button></div></div>
-
-      <div class="actions">
-        <button class="outline">
-          <span class="btn-icon share"></span>
-          <span>Отправить реквизиты</span>
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <div id="qrModal" class="qr-modal" style="display:none;">
-    <div class="qr-sheet">
-      <div class="qr-header">
-        <div class="qr-title">Удостоверение личности</div>
-        <button class="qr-close" id="closeQr">×</button>
-      </div>
-      <div class="qr-content">
-        <div class="qr-text">Покажите QR-код сотруднику</div>
-        <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=yeahwww" class="qr-image">
-        <div class="qr-subtext">или скажите код</div>
-        <div class="qr-code" id="staticCode">983517</div>
-      </div>
-    </div>
-  </div>
+  <!-- вставь сюда твой исходный HTML или оставь существующий index.html содержимое -->
+  <!-- Для краткости: оставь текущий контент сайта (тот, что у тебя был) -->
+  <h1 style="padding:16px">Сайт загружен — доступ разрешён</h1>
+  <!-- ... остальной HTML ... -->
 </div>
 
 <script>
-/* ========== 200 plain codes (вставлены прямо в клиент) ========== */
-const validCodes = [
-"885440","403958","794772","933488","441001","042450","271493","536110","509532","424604",
-"962838","821872","870163","318046","499748","375441","611720","934973","952225","229053",
-"529202","146039","295528","146534","792518","099437","648406","838234","262674","953938",
-"558433","739426","849574","631140","945989","154100","325213","103560","765284","077324",
-"942500","891786","717209","346236","495077","587007","105592","370977","455262","331556",
-"640561","671532","957361","214410","579363","500181","464197","907343","546678","273145",
-"065304","844132","963080","575352","960489","014723","097802","754665","880899","418196",
-"744754","864912","823182","700609","655638","001198","641620","517553","868287","909747",
-"349317","255759","765752","341001","737822","912755","066043","200348","961564","595078",
-"232473","250206","842368","149416","842194","569366","469730","095646","084353","335601",
-"917595","532614","978147","513054","114355","316089","578045","305230","740883","130873",
-"574033","348914","854030","967048","566528","213072","838260","632485","573812","616161",
-"301630","466604","096083","625252","836695","403598","332447","603613","253867","304432",
-"192800","198591","861370","195800","034574","642539","688557","272688","499678","072441",
-"094187","711693","794405","136550","919360","156814","968235","040518","883383","084146",
-"941802","733293","967922","869647","566860","716700","410303","878565","739543","550055",
-"289023","547136","851054","246941","890750","225654","938516","712480","618451","865351",
-"995900","439797","607854","288579","472449","516586","692317","672343","734239","961482",
-"831861","374727","086374","340079","642549","120952","510073","615592","660757","351556",
-"886128","199626","254841","016996","767022","284203","122824","739595","231169","390133"
-];
-/* ====================================================================== */
-
-/* --- device id utilities --- */
-function generateUUIDv4(){
-  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
-  // fallback
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
+/* --- helper: deviceId --- */
 function getDeviceId(){
-  let id = localStorage.getItem('device_id_v2');
-  if(!id){
-    id = 'dev-' + generateUUIDv4();
-    localStorage.setItem('device_id_v2', id);
-  }
-  return id;
-}
-
-/* --- bindings storage (code -> deviceId) --- */
-function getCodeBindings(){
-  try {
-    return JSON.parse(localStorage.getItem('code_bindings_v2') || '{}');
-  } catch(e){
-    return {};
+  try{
+    let id = localStorage.getItem('device_id_server');
+    if(!id){
+      if(window.crypto?.randomUUID) id = 'dev-'+crypto.randomUUID();
+      else id = 'dev-' + (Date.now().toString(36)) + '-' + Math.floor(Math.random()*1e9).toString(36);
+      localStorage.setItem('device_id_server', id);
+    }
+    return id;
+  }catch(e){
+    return 'dev-unknown-'+Date.now();
   }
 }
-function saveCodeBindings(obj){
-  localStorage.setItem('code_bindings_v2', JSON.stringify(obj));
-}
 
-/* --- reverse map (deviceId -> code) --- */
-function getDeviceBindings(){
-  try {
-    return JSON.parse(localStorage.getItem('device_bindings_v2') || '{}');
-  } catch(e){
-    return {};
-  }
-}
-function saveDeviceBindings(obj){
-  localStorage.setItem('device_bindings_v2', JSON.stringify(obj));
-}
-
-/* --- UI elements --- */
-const gateOverlay = document.getElementById('gateOverlay');
-const gateCodeInput = document.getElementById('gateCode');
-const gateSubmitBtn = document.getElementById('gateSubmit');
-const gateMsg = document.getElementById('gateMsg');
+/* --- UI refs --- */
+const overlay = document.getElementById('gateOverlay');
 const mainSite = document.getElementById('mainSite');
+const codeInput = document.getElementById('gateCode');
+const submitBtn = document.getElementById('gateSubmit');
+const msg = document.getElementById('gateMsg');
 
-// проверяем привязку устройства — если устройство уже связано с кодом, показываем сайт
-const deviceId = getDeviceId();
-const deviceBindings = getDeviceBindings();
-if(deviceBindings[deviceId]){
-  gateOverlay.style.display = 'none';
+/* --- Если в localStorage уже есть пометка успешного входа — показать сайт */
+if(localStorage.getItem('site_access_granted_server') === '1'){
+  overlay.style.display = 'none';
   mainSite.style.display = '';
-} else {
-  gateOverlay.style.display = '';
-  mainSite.style.display = 'none';
 }
 
-// Enter = submit
-gateCodeInput.addEventListener('keydown', (e) => {
-  if(e.key === 'Enter') gateSubmitBtn.click();
-});
+/* Enter -> submit */
+codeInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') submitBtn.click(); });
 
-gateSubmitBtn.addEventListener('click', () => {
-  const code = (gateCodeInput.value || '').trim();
-  const devId = getDeviceId();
+submitBtn.addEventListener('click', async ()=>{
+  const code = (codeInput.value||'').trim();
+  if(!/^\d{6}$/.test(code)){ msg.style.color='#b00'; msg.textContent='Код должен быть 6 цифр'; return; }
+  msg.style.color=''; msg.textContent='Проверка...';
+  const deviceId = getDeviceId();
 
-  if(!/^\d{6}$/.test(code)){
-    gateMsg.style.color = '#b00';
-    gateMsg.textContent = 'Код должен быть 6 цифр';
-    return;
-  }
-
-  if(!validCodes.includes(code)){
-    gateMsg.style.color = '#b00';
-    gateMsg.textContent = 'Неправильный код';
-    return;
-  }
-
-  const cBindings = getCodeBindings();       // code -> deviceId
-  const dBindings = getDeviceBindings();     // deviceId -> code
-
-  // Если это устройство уже привязано к другому коду — запрещаем
-  if(dBindings[devId] && dBindings[devId] !== code){
-    gateMsg.style.color = '#b00';
-    gateMsg.textContent = 'Это устройство уже привязано к другому коду';
-    return;
-  }
-
-  // Если код уже привязан к другому устройству — запрещаем
-  if(cBindings[code] && cBindings[code] !== devId){
-    gateMsg.style.color = '#b00';
-    gateMsg.textContent = 'Код уже использован на другом устройстве';
-    return;
-  }
-
-  // Привязываем код к устройству (если не привязан)
-  cBindings[code] = devId;
-  dBindings[devId] = code;
-  saveCodeBindings(cBindings);
-  saveDeviceBindings(dBindings);
-
-  // Разрешаем доступ
-  localStorage.setItem('site_access_granted_v2', '1');
-  gateOverlay.style.display = 'none';
-  mainSite.style.display = '';
-  gateMsg.style.color = '#0a0';
-  gateMsg.textContent = 'Код принят — доступ разрешён';
-});
-
-/* --- Оставляем логику сайта: табы, загрузка фото, QR --- */
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(btn.dataset.tab).classList.add('active');
+  try {
+    const resp = await fetch('/api/verify', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ code, deviceId })
     });
-  });
-
-  const fields = ['fio', 'iin', 'birth', 'docnum', 'issued', 'expiry'];
-  fields.forEach(id => {
-    const input = document.getElementById(id);
-    if (!input) return;
-    input.value = localStorage.getItem(id) || '';
-    input.addEventListener('input', () => {
-      localStorage.setItem(id, input.value);
-    });
-  });
-
-  const uploadBtn = document.getElementById('uploadBtn');
-  const photoInput = document.getElementById('photo');
-  const preview = document.getElementById('preview');
-
-  if(uploadBtn){
-    uploadBtn.addEventListener('click', () => photoInput.click());
-  }
-  if(photoInput){
-    photoInput.addEventListener('change', () => {
-      const file = photoInput.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        preview.innerHTML = `<img src="${e.target.result}" style="width:100%;border-radius:14px;">`;
-        uploadBtn.style.display = 'none';
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  const showBtn = document.getElementById('showQrBtn');
-  const modal = document.getElementById('qrModal');
-  const closeBtn = document.getElementById('closeQr');
-
-  if (showBtn && modal && closeBtn) {
-    showBtn.addEventListener('click', () => modal.style.display = '');
-    closeBtn.addEventListener('click', () => modal.style.display = 'none');
-    modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
+    const j = await resp.json();
+    if(resp.ok && j.ok){
+      localStorage.setItem('site_access_granted_server','1');
+      overlay.style.display='none';
+      mainSite.style.display='';
+    } else {
+      msg.style.color='#b00';
+      msg.textContent = j.error || 'Неправильный код';
+    }
+  } catch(err){
+    msg.style.color='#b00';
+    msg.textContent = 'Ошибка сети';
+    console.error(err);
   }
 });
 </script>
