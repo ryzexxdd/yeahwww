@@ -16,141 +16,197 @@
   <link rel="apple-touch-icon" sizes="167x167" href="icon-167.png">
   <link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
   <link rel="apple-touch-icon" href="icon-512.png">
+
+  <style>
+    /* Быстрые стили для модального окна доступа (не трогают основной style.css) */
+    #gateOverlay{
+      position:fixed; inset:0; background:#f6f6f7; z-index:9999; display:flex; align-items:flex-start; justify-content:center;
+      padding-top:36px; font-family:inherit;
+    }
+    .gateCard{
+      width:94%; max-width:420px; background:#fff; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.08);
+      padding:22px; text-align:center;
+    }
+    .gateTitle{font-size:22px;font-weight:700;margin:10px 0 6px;}
+    .gateSubtitle{color:#6b6b6b;margin-bottom:14px;}
+    .codeInput{
+      width:80%; max-width:320px; margin:10px auto; font-size:22px; text-align:center;
+      padding:12px 14px; border-radius:12px; border:1px solid #eee; display:block;
+    }
+    .btnPrimary{
+      display:inline-block; background:#111; color:#fff; padding:12px 18px; border-radius:12px; margin-top:12px; font-weight:700;
+    }
+    .btnTelegram{
+      display:block; margin:14px auto 0; background:#0a84ff; color:#fff; padding:12px 18px; border-radius:12px; text-decoration:none; width:85%; max-width:340px;
+    }
+    .gateMsg{color:#b00;margin-top:10px;min-height:20px;}
+    .smallHint{color:#9b9b9b;margin-top:10px;font-size:13px;}
+    .logoSmall{height:44px; display:block; margin:0 auto 6px;}
+  </style>
 </head>
 
 <body>
 
-<!-- === ваш существующий header / tabs / screens (взято из оригинала) === -->
-<div class="header">
-  <button class="back-btn" onclick="history.back()">‹</button>
-  <div class="header-title">Удостоверение личности</div>
+<!-- Gate overlay: показывается сразу -->
+<div id="gateOverlay" aria-hidden="false">
+  <div class="gateCard" role="dialog" aria-modal="true" aria-label="Получение доступа">
+    <img class="logoSmall" src="icon-180.png" alt="logo">
+    <div class="gateTitle">Получение доступа</div>
+    <div class="gateSubtitle">Введите одноразовый код (6 цифр), который вы получили у администратора.</div>
+
+    <input id="gateCode" class="codeInput" inputmode="numeric" maxlength="6" placeholder="XXXXXX" autofocus>
+
+    <button id="gateSubmit" class="btnPrimary">Подтвердить код</button>
+
+    <div id="gateMsg" class="gateMsg"></div>
+
+    <div class="smallHint">Нет кода — напишите в Telegram для получения доступа</div>
+    <a id="tgLink" class="btnTelegram" href="https://t.me/yeahwww" target="_blank" rel="noopener">Написать в Telegram</a>
+  </div>
 </div>
 
-<div class="tabs">
-  <button class="tab active" data-tab="doc">Документ</button>
-  <button class="tab" data-tab="req">Реквизиты</button>
-</div>
+<!-- === основной контент (оставлен ваш оригинал, слегка сокращён для компактности) === -->
 
-<section id="doc" class="screen active">
-  <div class="photo-area">
-    <button id="uploadBtn" class="upload-btn">Загрузить фото</button>
-    <input type="file" id="photo" accept="image/*" hidden>
-    <div id="preview"></div>
+<div id="mainSite" style="display:none;">
+  <!-- ваш оригинальный контент (скопирован из прежнего index.html) -->
+  <div class="header">
+    <button class="back-btn" onclick="history.back()">‹</button>
+    <div class="header-title">Удостоверение личности</div>
   </div>
 
-  <div class="actions">
-    <button class="primary" id="showQrBtn">
-      <span class="btn-icon qr"></span>
-      <span>Предъявить документ</span>
-    </button>
-
-    <button class="outline" id="enterCodeBtn">
-      <span class="btn-icon share"></span>
-      <span>Ввести код доступа</span>
-    </button>
+  <div class="tabs">
+    <button class="tab active" data-tab="doc">Документ</button>
+    <button class="tab" data-tab="req">Реквизиты</button>
   </div>
-</section>
 
-<section id="req" class="screen">
-  <div class="form">
-    <!-- поля (ваши) -->
-    <div class="field"><label>ФИО</label><div class="copy-field"><input id="fio" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww"><button class="copy-btn" data-copy="fio"></button></div></div>
-    <div class="field"><label>ИИН</label><div class="copy-field"><input id="iin" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww"><button class="copy-btn" data-copy="iin"></button></div></div>
-    <div class="field"><label>Дата рождения</label><div class="copy-field"><input id="birth" type="text" class="field-text"><button class="copy-btn" data-copy="birth"></button></div></div>
-    <div class="field"><label>Номер документа</label><div class="copy-field"><input id="docnum" type="text" class="field-text"><button class="copy-btn" data-copy="docnum"></button></div></div>
-    <div class="field"><label>Дата выдачи</label><div class="copy-field"><input id="issued" type="text" class="field-text"><button class="copy-btn" data-copy="issued"></button></div></div>
-    <div class="field"><label>Срок действия</label><div class="copy-field"><input id="expiry" type="text" class="field-text"><button class="copy-btn" data-copy="expiry"></button></div></div>
+  <section id="doc" class="screen active">
+    <div class="photo-area">
+      <button id="uploadBtn" class="upload-btn">Загрузить фото</button>
+      <input type="file" id="photo" accept="image/*" hidden>
+      <div id="preview"></div>
+    </div>
 
     <div class="actions">
-      <button class="outline">
+      <button class="primary" id="showQrBtn">
+        <span class="btn-icon qr"></span>
+        <span>Предъявить документ</span>
+      </button>
+
+      <button class="outline" id="enterCodeBtn" style="display:none;">
         <span class="btn-icon share"></span>
-        <span>Отправить реквизиты</span>
+        <span>Ввести код доступа</span>
       </button>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- QR modal (ваш) -->
-<div id="qrModal" class="qr-modal">
-  <div class="qr-sheet">
-    <div class="qr-header">
-      <div class="qr-title">Удостоверение личности</div>
-      <button class="qr-close" id="closeQr">×</button>
-    </div>
+  <section id="req" class="screen">
+    <div class="form">
+      <div class="field"><label>ФИО</label><div class="copy-field"><input id="fio" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww"><button class="copy-btn" data-copy="fio"></button></div></div>
+      <div class="field"><label>ИИН</label><div class="copy-field"><input id="iin" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww"><button class="copy-btn" data-copy="iin"></button></div></div>
+      <div class="field"><label>Дата рождения</label><div class="copy-field"><input id="birth" type="text" class="field-text"><button class="copy-btn" data-copy="birth"></button></div></div>
+      <div class="field"><label>Номер документа</label><div class="copy-field"><input id="docnum" type="text" class="field-text"><button class="copy-btn" data-copy="docnum"></button></div></div>
+      <div class="field"><label>Дата выдачи</label><div class="copy-field"><input id="issued" type="text" class="field-text"><button class="copy-btn" data-copy="issued"></button></div></div>
+      <div class="field"><label>Срок действия</label><div class="copy-field"><input id="expiry" type="text" class="field-text"><button class="copy-btn" data-copy="expiry"></button></div></div>
 
-    <div class="qr-content">
-      <div class="qr-text">Покажите QR-код сотруднику</div>
-      <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=yeahwww" class="qr-image">
-      <div class="qr-subtext">или скажите код</div>
-      <div class="qr-code" id="staticCode">983517</div>
+      <div class="actions">
+        <button class="outline">
+          <span class="btn-icon share"></span>
+          <span>Отправить реквизиты</span>
+        </button>
+      </div>
     </div>
-  </div>
-</div>
+  </section>
 
-<!-- === Новое: Ввод пользовательского кода доступа === -->
-<div id="codeModal" class="qr-modal">
-  <div class="qr-sheet">
-    <div class="qr-header">
-      <div class="qr-title">Вход по коду</div>
-      <button class="qr-close" id="closeCode">×</button>
-    </div>
-    <div class="qr-content">
-      <div class="qr-text">Введите ваш одноразовый код (6 цифр)</div>
-      <input id="accessCodeInput" type="text" inputmode="numeric" maxlength="6" style="font-size:22px;padding:10px;text-align:center;width:60%;margin:8px auto;display:block;border:1px solid #eee;border-radius:8px;">
-      <div id="codeStatus" style="margin-top:8px;color:#b00;"></div>
-      <div style="margin-top:12px;">
-        <button id="submitCodeBtn" class="primary">Подтвердить код</button>
+  <!-- QR modal (как в оригинале) -->
+  <div id="qrModal" class="qr-modal" style="display:none;">
+    <div class="qr-sheet">
+      <div class="qr-header">
+        <div class="qr-title">Удостоверение личности</div>
+        <button class="qr-close" id="closeQr">×</button>
+      </div>
+      <div class="qr-content">
+        <div class="qr-text">Покажите QR-код сотруднику</div>
+        <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=yeahwww" class="qr-image">
+        <div class="qr-subtext">или скажите код</div>
+        <div class="qr-code" id="staticCode">983517</div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- === Новое: Админ-логин (пароль) === -->
-<div id="adminModal" class="qr-modal">
-  <div class="qr-sheet">
-    <div class="qr-header">
-      <div class="qr-title">Панель администратора</div>
-      <button class="qr-close" id="closeAdmin">×</button>
-    </div>
-    <div class="qr-content">
-      <div class="qr-text">Введите пароль администратора</div>
-      <input id="adminPassInput" type="password" style="font-size:18px;padding:8px;width:80%;margin:8px auto;display:block;border:1px solid #eee;border-radius:8px;">
-      <div id="adminStatus" style="margin-top:8px;color:#b00;"></div>
-      <div style="margin-top:12px;">
-        <button id="adminLoginBtn" class="primary">Войти</button>
-      </div>
-
-      <div id="adminPanel" style="display:none;margin-top:12px;text-align:left;">
-        <p style="font-weight:600">Управление кодами</p>
-
-        <div style="margin-bottom:8px;">
-          <label>Добавить код вручную (6 цифр)</label>
-          <input id="manualCode" maxlength="6" inputmode="numeric" style="width:60%;padding:6px;border:1px solid #eee;border-radius:6px;">
-          <button id="addCodeBtn" class="outline" style="margin-left:8px;">Добавить</button>
-        </div>
-
-        <div style="margin-bottom:8px;">
-          <label>Сгенерировать N кодов</label>
-          <input id="genCount" type="number" value="10" min="1" style="width:80px;padding:6px;border:1px solid #eee;border-radius:6px;">
-          <button id="genBtn" class="outline" style="margin-left:8px;">Генерировать</button>
-        </div>
-
-        <div style="margin-top:12px;">
-          <button id="listCodesBtn" class="outline">Показать все коды (hashes)</button>
-          <button id="revokeBtn" class="outline" style="margin-left:8px;">Отключить код</button>
-        </div>
-
-        <pre id="codesList" style="max-height:220px;overflow:auto;background:#f7f7f7;padding:8px;border-radius:8px;margin-top:8px;"></pre>
-      </div>
-
-    </div>
-  </div>
+  <!-- остальные скрипты вашего сайта (копия логики табов, фото и т.д.) -->
 </div>
 
 <script>
-/* === сохранённый фронт: табы, фото, копирование, qr modal === */
-document.addEventListener('DOMContentLoaded', () => {
+/* ========== 200 plain codes (тот же список, что вы генерировали) ========== */
+const validCodes = [
+"885440","403958","794772","933488","441001","042450","271493","536110","509532","424604",
+"962838","821872","870163","318046","499748","375441","611720","934973","952225","229053",
+"529202","146039","295528","146534","792518","099437","648406","838234","262674","953938",
+"558433","739426","849574","631140","945989","154100","325213","103560","765284","077324",
+"942500","891786","717209","346236","495077","587007","105592","370977","455262","331556",
+"640561","671532","957361","214410","579363","500181","464197","907343","546678","273145",
+"065304","844132","963080","575352","960489","014723","097802","754665","880899","418196",
+"744754","864912","823182","700609","655638","001198","641620","517553","868287","909747",
+"349317","255759","765752","341001","737822","912755","066043","200348","961564","595078",
+"232473","250206","842368","149416","842194","569366","469730","095646","084353","335601",
+"917595","532614","978147","513054","114355","316089","578045","305230","740883","130873",
+"574033","348914","854030","967048","566528","213072","838260","632485","573812","616161",
+"301630","466604","096083","625252","836695","403598","332447","603613","253867","304432",
+"192800","198591","861370","195800","034574","642539","688557","272688","499678","072441",
+"094187","711693","794405","136550","919360","156814","968235","040518","883383","084146",
+"941802","733293","967922","869647","566860","716700","410303","878565","739543","550055",
+"289023","547136","851054","246941","890750","225654","938516","712480","618451","865351",
+"995900","439797","607854","288579","472449","516586","692317","672343","734239","961482",
+"831861","374727","086374","340079","642549","120952","510073","615592","660757","351556",
+"886128","199626","254841","016996","767022","284203","122824","739595","231169","390133"
+];
+/* ====================================================================== */
 
+const gateOverlay = document.getElementById('gateOverlay');
+const gateCodeInput = document.getElementById('gateCode');
+const gateSubmitBtn = document.getElementById('gateSubmit');
+const gateMsg = document.getElementById('gateMsg');
+const mainSite = document.getElementById('mainSite');
+
+// Если ранее пользователь уже получил доступ — сразу показываем сайт
+if(localStorage.getItem('site_access_granted') === '1'){
+  gateOverlay.style.display = 'none';
+  mainSite.style.display = '';
+} else {
+  gateOverlay.style.display = '';
+  mainSite.style.display = 'none';
+}
+
+// Удобство: Enter = Submit
+gateCodeInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') gateSubmitBtn.click();
+});
+
+gateSubmitBtn.addEventListener('click', () => {
+  const c = (gateCodeInput.value || '').trim();
+  if(!/^\d{6}$/.test(c)){
+    gateMsg.style.color = '#b00';
+    gateMsg.textContent = 'Код должен быть 6 цифр';
+    return;
+  }
+  // проверка по массиву (client-side)
+  if(validCodes.indexOf(c) !== -1){
+    // Успех: пометить в localStorage и показать сайт
+    localStorage.setItem('site_access_granted', '1');
+    gateOverlay.style.display = 'none';
+    mainSite.style.display = '';
+    gateMsg.style.color = '#0a0';
+    gateMsg.textContent = 'Код принят — доступ разрешён';
+    // опционально: можно удалить код из массива (для фронта) чтобы один код нельзя было использовать повторно в этом браузере
+    // но это не защищено на клиенте — на реальном сервере нужно блокировать код на бэке
+  } else {
+    gateMsg.style.color = '#b00';
+    gateMsg.textContent = 'Неправильный код';
+  }
+});
+
+/* --- Оставляем остальную логику вашего сайта (табы, фото, qr modal) --- */
+document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.tab').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
@@ -174,215 +230,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const photoInput = document.getElementById('photo');
   const preview = document.getElementById('preview');
 
-  uploadBtn.addEventListener('click', () => photoInput.click());
-
-  photoInput.addEventListener('change', () => {
-    const file = photoInput.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      preview.innerHTML = `<img src="${e.target.result}" style="width:100%;border-radius:14px;">`;
-      uploadBtn.style.display = 'none';
-    };
-    reader.readAsDataURL(file);
-  });
+  if(uploadBtn){
+    uploadBtn.addEventListener('click', () => photoInput.click());
+  }
+  if(photoInput){
+    photoInput.addEventListener('change', () => {
+      const file = photoInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        preview.innerHTML = `<img src="${e.target.result}" style="width:100%;border-radius:14px;">`;
+        uploadBtn.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    });
+  }
 
   const showBtn = document.getElementById('showQrBtn');
   const modal = document.getElementById('qrModal');
   const closeBtn = document.getElementById('closeQr');
 
   if (showBtn && modal && closeBtn) {
-    showBtn.addEventListener('click', () => modal.classList.add('show'));
-    closeBtn.addEventListener('click', () => modal.classList.remove('show'));
-    modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
+    showBtn.addEventListener('click', () => modal.style.display = '');
+    closeBtn.addEventListener('click', () => modal.style.display = 'none');
+    modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
   }
-
-  document.addEventListener('click', e => {
-    const btn = e.target.closest('.copy-btn');
-    if (!btn) return;
-    const inputId = btn.dataset.copy;
-    const input = document.getElementById(inputId);
-    if (!input) return;
-    navigator.clipboard.writeText(input.value || '');
-    btn.style.opacity = '0.5';
-    setTimeout(() => btn.style.opacity = '1', 300);
-  });
-
-  document.addEventListener('click', e => {
-    const btn = e.target.closest('.outline');
-    if (!btn) return;
-    if (!btn.textContent.includes('Отправить реквизиты')) return;
-    const data = {
-      fio: document.getElementById('fio')?.value || '',
-      iin: document.getElementById('iin')?.value || '',
-      birth: document.getElementById('birth')?.value || '',
-      docnum: document.getElementById('docnum')?.value || '',
-      issued: document.getElementById('issued')?.value || '',
-      expiry: document.getElementById('expiry')?.value || ''
-    };
-    const text =
-`Удостоверение личности
-
-ФИО: ${data.fio}
-ИИН: ${data.iin}
-Дата рождения: ${data.birth}
-Номер документа: ${data.docnum}
-Дата выдачи: ${data.issued}
-Срок действия: ${data.expiry}`;
-    if (navigator.share) {
-      navigator.share({ title: 'Реквизиты документа', text });
-    } else {
-      navigator.clipboard.writeText(text);
-      alert('Реквизиты скопированы');
-    }
-  });
-
 });
-</script>
-
-<script>
-/* === утилиты: deviceId, modal контролы, ввод кода и API вызовы === */
-
-function getDeviceId(){
-  let id = localStorage.getItem('device_id_v1');
-  if(!id){
-    // простая UUID (если браузер поддерживает)
-    if(window.crypto && crypto.randomUUID) id = crypto.randomUUID();
-    else id = 'd-' + Date.now() + '-' + Math.floor(Math.random()*1e6);
-    localStorage.setItem('device_id_v1', id);
-  }
-  return id;
-}
-
-(function(){
-  const enterBtn = document.getElementById('enterCodeBtn');
-  const codeModal = document.getElementById('codeModal');
-  const closeCode = document.getElementById('closeCode');
-  const submitCodeBtn = document.getElementById('submitCodeBtn');
-  const codeInput = document.getElementById('accessCodeInput');
-  const statusEl = document.getElementById('codeStatus');
-
-  if(enterBtn){
-    enterBtn.addEventListener('click', () => {
-      codeInput.value = '';
-      statusEl.textContent = '';
-      codeModal.classList.add('show');
-    });
-  }
-  closeCode.addEventListener('click', () => codeModal.classList.remove('show'));
-  codeModal.addEventListener('click', e => { if (e.target === codeModal) codeModal.classList.remove('show'); });
-
-  submitCodeBtn.addEventListener('click', async () => {
-    const code = (codeInput.value || '').trim();
-    if(!/^\d{6}$/.test(code)){ statusEl.textContent = 'Код должен быть 6 цифр'; return; }
-    statusEl.textContent = 'Проверка...';
-    const deviceId = getDeviceId();
-    try {
-      const res = await fetch('/api/verify', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ code, deviceId })
-      });
-      const json = await res.json();
-      if(res.ok && json.ok){
-        statusEl.style.color = '#0a0';
-        statusEl.textContent = 'Код принят — доступ разрешён';
-        setTimeout(()=> codeModal.classList.remove('show'), 800);
-      } else {
-        statusEl.style.color = '#b00';
-        statusEl.textContent = json.error || 'Ошибка проверки';
-      }
-    } catch(e){
-      statusEl.style.color = '#b00';
-      statusEl.textContent = 'Ошибка сети';
-    }
-  });
-})();
-
-/* === админ-модал === */
-(function(){
-  const adminModal = document.getElementById('adminModal');
-  const openAdminBtn = document.createElement('button');
-  openAdminBtn.className = 'tab';
-  openAdminBtn.style.position = 'fixed';
-  openAdminBtn.style.right = '12px';
-  openAdminBtn.style.bottom = '12px';
-  openAdminBtn.style.zIndex = '999';
-  openAdminBtn.style.background = '#2b6bcc';
-  openAdminBtn.style.color = '#fff';
-  openAdminBtn.textContent = 'Admin';
-  document.body.appendChild(openAdminBtn);
-
-  openAdminBtn.addEventListener('click', () => {
-    document.getElementById('adminPassInput').value = '';
-    document.getElementById('adminStatus').textContent = '';
-    document.getElementById('adminPanel').style.display='none';
-    adminModal.classList.add('show');
-  });
-
-  document.getElementById('closeAdmin').addEventListener('click', () => adminModal.classList.remove('show'));
-  adminModal.addEventListener('click', e => { if (e.target === adminModal) adminModal.classList.remove('show'); });
-
-  async function apiAdmin(body){
-    const res = await fetch('/api/admin', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(body)
-    });
-    return res.json().then(j => ({ ok: res.ok, json:j }));
-  }
-
-  document.getElementById('adminLoginBtn').addEventListener('click', async () => {
-    const pass = document.getElementById('adminPassInput').value || '';
-    document.getElementById('adminStatus').textContent = 'Проверка...';
-    const r = await apiAdmin({ action:'auth', password:pass });
-    if(r.ok && r.json.ok){
-      document.getElementById('adminStatus').style.color = '#0a0';
-      document.getElementById('adminStatus').textContent = 'Вход выполнен';
-      document.getElementById('adminPanel').style.display='block';
-      // сохранить токен в sessionStorage (простая сессия)
-      sessionStorage.setItem('admin_token', r.json.token);
-    } else {
-      document.getElementById('adminStatus').style.color = '#b00';
-      document.getElementById('adminStatus').textContent = r.json.error || 'Ошибка';
-    }
-  });
-
-  document.getElementById('addCodeBtn').addEventListener('click', async () => {
-    const code = (document.getElementById('manualCode').value||'').trim();
-    if(!/^\d{6}$/.test(code)){ alert('Нужно 6 цифр'); return; }
-    const token = sessionStorage.getItem('admin_token')||'';
-    const r = await apiAdmin({ action:'add', token, code });
-    if(r.ok && r.json.ok) { alert('Добавлен'); document.getElementById('manualCode').value=''; }
-    else alert(r.json.error || 'Ошибка');
-  });
-
-  document.getElementById('genBtn').addEventListener('click', async () => {
-    const n = parseInt(document.getElementById('genCount').value||'10',10);
-    const token = sessionStorage.getItem('admin_token')||'';
-    const r = await apiAdmin({ action:'generate', token, count: n });
-    if(r.ok && r.json.ok) alert('Сгенерировано: ' + (r.json.generated || []).join(', '));
-    else alert(r.json.error || 'Ошибка');
-  });
-
-  document.getElementById('listCodesBtn').addEventListener('click', async () => {
-    const token = sessionStorage.getItem('admin_token')||'';
-    const r = await apiAdmin({ action:'list', token });
-    if(r.ok && r.json.ok){
-      document.getElementById('codesList').textContent = JSON.stringify(r.json.codes, null, 2);
-    } else alert(r.json.error || 'Ошибка');
-  });
-
-  document.getElementById('revokeBtn').addEventListener('click', async () => {
-    const to = prompt('Введите код (6 цифр) для отключения:');
-    if(!to) return;
-    const token = sessionStorage.getItem('admin_token')||'';
-    const r = await apiAdmin({ action:'revoke', token, code: to.trim() });
-    if(r.ok && r.json.ok) alert('Отключено');
-    else alert(r.json.error || 'Ошибка');
-  });
-
-})();
 </script>
 
 </body>
