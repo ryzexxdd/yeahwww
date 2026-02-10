@@ -1,46 +1,52 @@
-// api/verify.js — Vercel / serverless compatible
-const fs = require('fs').promises;
-const path = require('path');
-const crypto = require('crypto');
-const CODES_FILE = path.join(process.cwd(), 'codes.json');
+// api/verify.js
+// Один код = одно устройство (без БД, Vercel Free)
 
-function sha(s){ return crypto.createHash('sha256').update(s).digest('hex'); }
+const CODES = [
+"104583","127904","138662","149275","152849","163407","174296","185930","196742","207518",
+"218964","229371","230845","241906","252137","263904","274681","285470","296138","307954",
+"318602","329481","330964","341207","352689","363175","374920","385406","396271","407538",
+"418694","429105","430876","441293","452780","463019","474862","485130","496754","507219",
+"518603","529847","530194","541368","552971","563240","574809","585136","596472","607915",
+"618204","629783","630451","641920","652138","663574","674809","685241","696730","707195",
+"718642","729308","730864","741205","752936","763410","774581","785209","796843","807314",
+"818650","829407","830926","841372","852190","863745","874206","885931","896314","907652",
+"918403","929175","930684","941258","952706","963149","974820","985361","996247","107539",
+"118264","129805","130476","141903","152684","163250","174809","185347","196520","207831",
+"218405","229670","230914","241538","252906","263417","274805","285139","296748","307264",
+"318905","329417","330852","341706","352149","363805","374216","385974","396508","407129",
+"418760","429316","430985","441207","452863","463518","474901","485260","496873","507314",
+"518942","529306","530781","541268","552904","563417","574830","585296","596741","607185",
+"618930","629417","630852","641206","652873","663504","674918","685240","696857","707319",
+"718640","729504","730982","741236","752904","763581","774209","785936","796314","807528",
+"818947","829306","830751","841269","852903","863417","874960","885231","896704","907158",
+"918642","929305","930874","941206","952839","963410","974526","985704","996318","107842"
+];
+
+// временное хранилище привязок (на время жизни функции)
+const USED = {};
 
 module.exports = async (req, res) => {
-  if(req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-  const { code, deviceId } = req.body || {};
-  if(!code || !deviceId) return res.status(400).json({ error: 'no data' });
-  if(!/^\d{6}$/.test(code)) return res.status(400).json({ error: 'invalid format' });
-
-  try {
-    // read codes.json
-    const txt = await fs.readFile(CODES_FILE, 'utf8').catch(()=> '[]');
-    const arr = JSON.parse(txt || '[]');
-
-    const h = sha(code);
-    const idx = arr.findIndex(r => r.code_hash === h);
-    if(idx === -1) return res.status(403).json({ error: 'Неверный код' });
-
-    const row = arr[idx];
-    if(!row.is_active) return res.status(403).json({ error: 'Код отключён' });
-
-    // если не активирован — привязываем к deviceId
-    if(!row.activated_at){
-      row.activated_at = (new Date()).toISOString();
-      row.assigned_device_id = deviceId;
-      arr[idx] = row;
-      await fs.writeFile(CODES_FILE, JSON.stringify(arr, null, 2), 'utf8');
-      return res.json({ ok: true, message:'Активирован и привязан' });
-    } else {
-      // если уже привязан — только тому же deviceId разрешаем
-      if(row.assigned_device_id === deviceId){
-        return res.json({ ok: true, message:'Доступ подтверждён' });
-      } else {
-        return res.status(403).json({ error:'Код уже использован на другом устройстве' });
-      }
-    }
-  } catch(err){
-    console.error(err);
-    return res.status(500).json({ error:'server error' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
+
+  const { code, deviceId } = req.body || {};
+
+  if (!code || !deviceId) {
+    return res.status(400).json({ error: "No data" });
+  }
+
+  if (!CODES.includes(code)) {
+    return res.status(403).json({ error: "Неверный код" });
+  }
+
+  // если код уже использован другим устройством
+  if (USED[code] && USED[code] !== deviceId) {
+    return res.status(403).json({ error: "Код уже использован" });
+  }
+
+  // привязка код → устройство
+  USED[code] = deviceId;
+
+  return res.json({ ok: true });
 };
