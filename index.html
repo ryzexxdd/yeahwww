@@ -3,106 +3,147 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>yeahwww — доступ</title>
+  <title>yeahwww</title>
+
   <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+
   <style>
-    /* стили модального окна — не трогают основной CSS */
-    #gateOverlay{position:fixed;inset:0;background:#f6f6f7;z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding-top:36px;font-family:inherit;}
-    .gateCard{width:94%;max-width:420px;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08);padding:22px;text-align:center;}
+    /* ===== GATE (Kaspi-style) ===== */
+    #gateOverlay{
+      position:fixed;
+      inset:0;
+      background:#f6f6f7;
+      z-index:99999;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding-top:36px;
+    }
+    .gateCard{
+      width:94%;
+      max-width:420px;
+      background:#fff;
+      border-radius:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.08);
+      padding:22px;
+      text-align:center;
+    }
     .gateTitle{font-size:22px;font-weight:700;margin:10px 0 6px;}
     .gateSubtitle{color:#6b6b6b;margin-bottom:14px;}
-    .codeInput{width:80%;max-width:320px;margin:10px auto;font-size:22px;text-align:center;padding:12px 14px;border-radius:12px;border:1px solid #eee;display:block;}
-    .btnPrimary{display:inline-block;background:#111;color:#fff;padding:12px 18px;border-radius:12px;margin-top:12px;font-weight:700;border:none;cursor:pointer;}
-    .btnTelegram{display:block;margin:14px auto 0;background:#0a84ff;color:#fff;padding:12px 18px;border-radius:12px;text-decoration:none;width:85%;max-width:340px;}
+    .codeInput{
+      width:80%;
+      max-width:320px;
+      margin:10px auto;
+      font-size:22px;
+      text-align:center;
+      padding:12px 14px;
+      border-radius:12px;
+      border:1px solid #eee;
+      display:block;
+    }
+    .btnPrimary{
+      display:inline-block;
+      background:#111;
+      color:#fff;
+      padding:12px 18px;
+      border-radius:12px;
+      margin-top:12px;
+      font-weight:700;
+      border:none;
+      cursor:pointer;
+    }
+    .btnTelegram{
+      display:block;
+      margin:14px auto 0;
+      background:#0a84ff;
+      color:#fff;
+      padding:12px 18px;
+      border-radius:12px;
+      text-decoration:none;
+      width:85%;
+      max-width:340px;
+    }
     .gateMsg{color:#b00;margin-top:10px;min-height:20px;}
     .smallHint{color:#9b9b9b;margin-top:10px;font-size:13px;}
     .logoSmall{height:44px;display:block;margin:0 auto 6px;}
   </style>
 </head>
+
 <body>
 
-<!-- Gate overlay -->
-<div id="gateOverlay" aria-hidden="false">
-  <div class="gateCard" role="dialog" aria-modal="true" aria-label="Получение доступа">
-    <img class="logoSmall" src="icon-180.png" alt="logo">
+<!-- 🔒 ОКНО ДОСТУПА -->
+<div id="gateOverlay">
+  <div class="gateCard">
+    <img class="logoSmall" src="icon-180.png" alt="">
     <div class="gateTitle">Получение доступа</div>
-    <div class="gateSubtitle">Введите одноразовый код (6 цифр), который вы получили у администратора.</div>
+    <div class="gateSubtitle">
+      Введите одноразовый код (6 цифр)
+    </div>
 
-    <input id="gateCode" class="codeInput" inputmode="numeric" maxlength="6" placeholder="XXXXXX" autofocus>
+    <input id="gateCode" class="codeInput" inputmode="numeric" maxlength="6" placeholder="XXXXXX">
     <button id="gateSubmit" class="btnPrimary">Подтвердить код</button>
     <div id="gateMsg" class="gateMsg"></div>
-    <div class="smallHint">Нет кода — напишите в Telegram для получения доступа</div>
-    <a id="tgLink" class="btnTelegram" href="https://t.me/yeahwww" target="_blank" rel="noopener">Написать в Telegram</a>
+
+    <div class="smallHint">Нет кода — напишите в Telegram</div>
+    <a class="btnTelegram" href="https://t.me/yeahwww" target="_blank">
+      Написать в Telegram
+    </a>
   </div>
 </div>
 
-<!-- основной сайт (скрыт до успешного входа) -->
-<div id="mainSite" style="display:none;">
-  <!-- вставь сюда твой исходный HTML или оставь существующий index.html содержимое -->
-  <!-- Для краткости: оставь текущий контент сайта (тот, что у тебя был) -->
-  <h1 style="padding:16px">Сайт загружен — доступ разрешён</h1>
-  <!-- ... остальной HTML ... -->
-</div>
+<!-- 🔽 ТВОЙ САЙТ (БЕЗ ИЗМЕНЕНИЙ) 🔽 -->
+<!-- ВСТАВЬ СЮДА ВЕСЬ СВОЙ ТЕКУЩИЙ HTML -->
+<!-- tabs, screens, формы, кнопки — всё как есть -->
+<!-- 🔼 НИЧЕГО ВНУТРИ НЕ МЕНЯЙ 🔼 -->
 
 <script>
-/* --- helper: deviceId --- */
 function getDeviceId(){
-  try{
-    let id = localStorage.getItem('device_id_server');
-    if(!id){
-      if(window.crypto?.randomUUID) id = 'dev-'+crypto.randomUUID();
-      else id = 'dev-' + (Date.now().toString(36)) + '-' + Math.floor(Math.random()*1e9).toString(36);
-      localStorage.setItem('device_id_server', id);
-    }
-    return id;
-  }catch(e){
-    return 'dev-unknown-'+Date.now();
+  let id = localStorage.getItem('device_id_server');
+  if(!id){
+    id = crypto.randomUUID ? 'dev-'+crypto.randomUUID() : 'dev-'+Date.now();
+    localStorage.setItem('device_id_server', id);
   }
+  return id;
 }
 
-/* --- UI refs --- */
 const overlay = document.getElementById('gateOverlay');
-const mainSite = document.getElementById('mainSite');
 const codeInput = document.getElementById('gateCode');
-const submitBtn = document.getElementById('gateSubmit');
+const btn = document.getElementById('gateSubmit');
 const msg = document.getElementById('gateMsg');
 
-/* --- Если в localStorage уже есть пометка успешного входа — показать сайт */
+/* уже вошёл */
 if(localStorage.getItem('site_access_granted_server') === '1'){
-  overlay.style.display = 'none';
-  mainSite.style.display = '';
+  overlay.remove();
 }
 
-/* Enter -> submit */
-codeInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') submitBtn.click(); });
-
-submitBtn.addEventListener('click', async ()=>{
-  const code = (codeInput.value||'').trim();
-  if(!/^\d{6}$/.test(code)){ msg.style.color='#b00'; msg.textContent='Код должен быть 6 цифр'; return; }
-  msg.style.color=''; msg.textContent='Проверка...';
-  const deviceId = getDeviceId();
-
-  try {
-    const resp = await fetch('/api/verify', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ code, deviceId })
-    });
-    const j = await resp.json();
-    if(resp.ok && j.ok){
-      localStorage.setItem('site_access_granted_server','1');
-      overlay.style.display='none';
-      mainSite.style.display='';
-    } else {
-      msg.style.color='#b00';
-      msg.textContent = j.error || 'Неправильный код';
-    }
-  } catch(err){
-    msg.style.color='#b00';
-    msg.textContent = 'Ошибка сети';
-    console.error(err);
+btn.onclick = async () => {
+  const code = codeInput.value.trim();
+  if(!/^\d{6}$/.test(code)){
+    msg.textContent = 'Код должен быть 6 цифр';
+    return;
   }
-});
+
+  msg.textContent = 'Проверка...';
+
+  const res = await fetch('/api/verify',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      code,
+      deviceId:getDeviceId()
+    })
+  });
+
+  const j = await res.json();
+
+  if(res.ok && j.ok){
+    localStorage.setItem('site_access_granted_server','1');
+    overlay.remove();
+  } else {
+    msg.textContent = j.error || 'Неверный код';
+  }
+};
 </script>
 
 </body>
