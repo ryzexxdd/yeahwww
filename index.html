@@ -1,146 +1,142 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8"> 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>yeahwww</title>
 
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
 
-  <style>
-    /* ===== ACCESS GATE (НЕ ЛОМАЕТ КЛИКИ) ===== */
-    #gateOverlay{
-      position:fixed;
-      inset:0;
-      background:#f6f6f7;
-      z-index:99999;
-      display:flex;
-      justify-content:center;
-      align-items:flex-start;
-      padding-top:36px;
-      pointer-events: all; /* 🔴 ВАЖНО */
-    }
-    #gateOverlay.hidden{
-      display:none;
-      pointer-events:none;
-    }
-    .gateCard{
-      width:94%;
-      max-width:420px;
-      background:#fff;
-      border-radius:16px;
-      padding:22px;
-      text-align:center;
-      box-shadow:0 10px 30px rgba(0,0,0,.08);
-    }
-    .gateTitle{font-size:22px;font-weight:700;margin:10px 0 6px;}
-    .gateSubtitle{color:#6b6b6b;margin-bottom:14px;}
-    .codeInput{
-      width:80%;
-      max-width:320px;
-      margin:10px auto;
-      font-size:22px;
-      text-align:center;
-      padding:12px;
-      border-radius:12px;
-      border:1px solid #eee;
-      display:block;
-    }
-    .btnPrimary{
-      background:#111;
-      color:#fff;
-      padding:12px 18px;
-      border-radius:12px;
-      border:none;
-      font-weight:700;
-      cursor:pointer;
-    }
-    .gateMsg{margin-top:10px;color:#b00;}
-    .btnTelegram{
-      display:block;
-      margin:14px auto 0;
-      background:#0a84ff;
-      color:#fff;
-      padding:12px;
-      border-radius:12px;
-      text-decoration:none;
-      width:85%;
-    }
-  </style>
+  <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="icon-167.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
+  <link rel="apple-touch-icon" href="icon-512.png">
 </head>
 
 <body>
 
-<!-- 🔒 ACCESS OVERLAY -->
+<!-- ================== ТВОЙ САЙТ (БЕЗ ИЗМЕНЕНИЙ) ================== -->
+
+<!-- ⚠️ ВЕСЬ ТВОЙ ОРИГИНАЛЬНЫЙ HTML -->
+<!-- (я его не трогаю вообще) -->
+
+<!-- ================== ACCESS GATE ================== -->
+<style>
+#gateOverlay{
+  position:fixed;
+  inset:0;
+  background:#f6f6f7;
+  z-index:99999;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding-top:36px;
+}
+.gateCard{
+  width:94%;
+  max-width:420px;
+  background:#fff;
+  border-radius:16px;
+  padding:22px;
+  text-align:center;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+.codeInput{
+  width:80%;
+  max-width:320px;
+  margin:10px auto;
+  font-size:22px;
+  text-align:center;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #eee;
+}
+.btnPrimary{
+  background:#111;
+  color:#fff;
+  padding:12px 18px;
+  border-radius:12px;
+  border:none;
+  font-weight:700;
+}
+.gateMsg{margin-top:10px;color:#b00;}
+</style>
+
 <div id="gateOverlay">
   <div class="gateCard">
-    <div class="gateTitle">Получение доступа</div>
-    <div class="gateSubtitle">Введите одноразовый код (6 цифр)</div>
+    <div style="font-size:22px;font-weight:700">Получение доступа</div>
+    <div style="color:#6b6b6b;margin-bottom:14px">Введите одноразовый код</div>
     <input id="gateCode" class="codeInput" maxlength="6" placeholder="XXXXXX">
-    <button id="gateBtn" class="btnPrimary">Подтвердить код</button>
+    <button id="gateBtn" class="btnPrimary">Подтвердить</button>
     <div id="gateMsg" class="gateMsg"></div>
-    <a class="btnTelegram" href="https://t.me/yeahwww" target="_blank">
-      Написать в Telegram
-    </a>
   </div>
 </div>
 
-<!-- ================= ТВОЙ САЙТ (БЕЗ ИЗМЕНЕНИЙ) ================= -->
-<!-- ⬇⬇⬇ ВЕСЬ ТВОЙ HTML НИЖЕ ОСТАЁТСЯ 1 В 1 ⬇⬇⬇ -->
-
-<!-- (дальше идёт твой код: header, tabs, sections, scripts и т.д.) -->
-
 <script>
-function getDeviceId(){
-  let id = localStorage.getItem('device_id_server');
-  if(!id){
-    id = crypto.randomUUID ? crypto.randomUUID() : 'dev-'+Date.now();
-    localStorage.setItem('device_id_server', id);
+(function(){
+
+  function getDeviceId(){
+    let id = localStorage.getItem('device_id_server');
+    if(!id){
+      id = crypto.randomUUID ? crypto.randomUUID() : 'dev-'+Date.now();
+      localStorage.setItem('device_id_server', id);
+    }
+    return id;
   }
-  return id;
-}
 
-const overlay = document.getElementById('gateOverlay');
-const btn = document.getElementById('gateBtn');
-const input = document.getElementById('gateCode');
-const msg = document.getElementById('gateMsg');
+  const overlay = document.getElementById('gateOverlay');
+  const btn = document.getElementById('gateBtn');
+  const input = document.getElementById('gateCode');
+  const msg = document.getElementById('gateMsg');
 
-/* если уже был вход */
-if(localStorage.getItem('site_access_granted_server') === '1'){
-  overlay.classList.add('hidden');
-}
-
-btn.onclick = async () => {
-  const code = input.value.trim();
-  if(!/^\d{6}$/.test(code)){
-    msg.textContent = 'Код должен быть 6 цифр';
+  // Уже авторизован — УБИРАЕМ overlay ПОЛНОСТЬЮ
+  if(localStorage.getItem('site_access_granted_server') === '1'){
+    overlay.remove();
     return;
   }
 
-  msg.textContent = 'Проверка...';
+  btn.onclick = async () => {
+    const code = input.value.trim();
+    if(!/^\d{6}$/.test(code)){
+      msg.textContent = 'Код должен быть 6 цифр';
+      return;
+    }
 
-  const res = await fetch('/api/verify',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      code,
-      deviceId:getDeviceId()
-    })
-  });
+    msg.textContent = 'Проверка...';
 
-  const j = await res.json();
+    try{
+      const res = await fetch('/api/verify',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          code,
+          deviceId:getDeviceId()
+        })
+      });
 
-  if(res.ok && j.ok){
-    localStorage.setItem('site_access_granted_server','1');
-    overlay.classList.add('hidden'); // 🔴 ВАЖНО
-  } else {
-    msg.textContent = j.error || 'Неверный код';
-  }
-};
+      const j = await res.json();
+
+      if(res.ok && j.ok){
+        localStorage.setItem('site_access_granted_server','1');
+
+        // 🔴 КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ
+        overlay.style.pointerEvents = 'none';
+        overlay.remove();
+
+      } else {
+        msg.textContent = j.error || 'Неверный код';
+      }
+    }catch(e){
+      msg.textContent = 'Ошибка сети';
+    }
+  };
+
+})();
 </script>
 
 </body>
