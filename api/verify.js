@@ -96,18 +96,28 @@ async function writeBindings(bindings) {
   await fs.mkdir(DATA_DIR, { recursive: true });
   await fs.writeFile(STORE_FILE, JSON.stringify(bindings), 'utf8');
 }
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { code, deviceId } = req.body || {};
-  if (!code || !deviceId) {
+  const rawCode = req.body?.code;
+  const rawDeviceId = req.body?.deviceId;
+
+  if (rawCode === undefined || rawCode === null || !rawDeviceId) {
     return res.status(400).json({ error: 'No data' });
   }
 
-  if (!CODES.includes(code)) {
+  const code = String(rawCode).trim();
+  const deviceId = String(rawDeviceId).trim();
+
+  if (!/^\d{6}$/.test(code) || !CODES.includes(code)) {
     return res.status(403).json({ error: 'Неверный код' });
+  }
+
+  if (!deviceId) {
+    return res.status(400).json({ error: 'No data' });
   }
 
   let releaseLock;
