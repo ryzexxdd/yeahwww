@@ -54,7 +54,34 @@ const CODES = [
 "154852","298327","243488","987201","294714","872467","786776","637198","436533","408520"
 ];
 
-const STORE_FILE = path.join('/tmp', 'yeahwww-code-bindings.json');
+const DATA_DIR = path.join(process.cwd(), '.data');
+const STORE_FILE = path.join(DATA_DIR, 'yeahwww-code-bindings.json');
+const LOCK_FILE = path.join(DATA_DIR, 'yeahwww-code-bindings.lock');
+
+async function sleep(ms) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function acquireLock() {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    try {
+      const handle = await fs.open(LOCK_FILE, 'wx');
+      return async () => {
+        await handle.close();
+        await fs.unlink(LOCK_FILE).catch(() => {});
+      };
+    } catch (error) {
+      if (error.code !== 'EEXIST') {
+        throw error;
+      }
+      await sleep(20);
+    }
+  }
+
+  throw new Error('Lock timeout');
+}
 
 async function readBindings() {
   try {
@@ -66,9 +93,9 @@ async function readBindings() {
 }
 
 async function writeBindings(bindings) {
+  await fs.mkdir(DATA_DIR, { recursive: true });
   await fs.writeFile(STORE_FILE, JSON.stringify(bindings), 'utf8');
 }
-
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -83,14 +110,25 @@ module.exports = async (req, res) => {
     return res.status(403).json({ error: 'Неверный код' });
   }
 
-  const bindings = await readBindings();
+  let releaseLock;
+  try {
+    releaseLock = await acquireLock();
 
-  if (bindings[code] && bindings[code] !== deviceId) {
-    return res.status(403).json({ error: 'Код уже использован на другом устройстве' });
+    const bindings = await readBindings();
+
+    if (bindings[code] && bindings[code] !== deviceId) {
+      return res.status(403).json({ error: 'Код уже использован на другом устройстве' });
+    }
+
+    bindings[code] = deviceId;
+    await writeBindings(bindings);
+
+    return res.status(200).json({ ok: true });
+  } catch (error) {
+    return res.status(500).json({ error: 'Ошибка проверки кода' });
+  } finally {
+    if (releaseLock) {
+      await releaseLock();
+    }
   }
-
-  bindings[code] = deviceId;
-  await writeBindings(bindings);
-
-  return res.status(200).json({ ok: true });
 };
