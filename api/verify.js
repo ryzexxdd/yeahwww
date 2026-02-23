@@ -54,19 +54,53 @@ const CODES = [
 "154852","298327","243488","987201","294714","872467","786776","637198","436533","408520"
 ];
 
-const STORE_FILE = path.join('/tmp', 'yeahwww-code-bindings.json');
+const DATA_DIR = path.join(process.cwd(), '.data');
+const STORE_FILE = path.join(DATA_DIR, 'yeahwww-code-bindings.json');
+const LOCK_FILE = path.join(DATA_DIR, 'yeahwww-code-bindings.lock');
+let memoryBindings = {};
+
+async function sleep(ms) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function acquireLock() {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+
+  for (let attempt = 0; attempt < 250; attempt += 1) {
+    try {
+      const handle = await fs.open(LOCK_FILE, 'wx');
+      return async () => {
+        await handle.close();
+        await fs.unlink(LOCK_FILE).catch(() => {});
+      };
+    } catch (error) {
+      if (error.code !== 'EEXIST') {
+        throw error;
+      }
+      await sleep(20);
+    }
+  }
+
+  throw new Error('Lock timeout');
+}
 
 async function readBindings() {
   try {
     const raw = await fs.readFile(STORE_FILE, 'utf8');
     return JSON.parse(raw);
   } catch (error) {
-    return {};
+    return { ...memoryBindings };
   }
 }
 
 async function writeBindings(bindings) {
-  await fs.writeFile(STORE_FILE, JSON.stringify(bindings), 'utf8');
+  memoryBindings = { ...bindings };
+  try {
+    await fs.mkdir(DATA_DIR, { recursive: true });
+    await fs.writeFile(STORE_FILE, JSON.stringify(bindings), 'utf8');
+  } catch (error) {
+    // fallback to in-memory store if filesystem is read-only/unavailable
+  }
 }
 
 module.exports = async (req, res) => {
@@ -74,23 +108,49 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { code, deviceId } = req.body || {};
-  if (!code || !deviceId) {
+  const rawCode = req.body?.code;
+  const rawDeviceId = req.body?.deviceId;
+
+  if (rawCode === undefined || rawCode === null || !rawDeviceId) {
     return res.status(400).json({ error: 'No data' });
   }
 
-  if (!CODES.includes(code)) {
+  const code = String(rawCode).trim();
+  const deviceId = String(rawDeviceId).trim();
+
+  if (!/^\d{6}$/.test(code)) {
     return res.status(403).json({ error: 'Неверный код' });
   }
 
-  const bindings = await readBindings();
-
-  if (bindings[code] && bindings[code] !== deviceId) {
-    return res.status(403).json({ error: 'Код уже использован на другом устройстве' });
+  if (!deviceId) {
+    return res.status(400).json({ error: 'No data' });
   }
 
-  bindings[code] = deviceId;
-  await writeBindings(bindings);
+  let releaseLock;
+  try {
+    releaseLock = await acquireLock();
 
-  return res.status(200).json({ ok: true });
+    const bindings = await readBindings();
+
+    if (bindings[code]) {
+      return res.status(403).json({ error: 'Код уже использован' });
+    }
+
+    bindings[code] = deviceId;
+    await writeBindings(bindings);
+
+    return res.status(200).json({ ok: true });
+  } catch (error) {
+    // If file lock/storage is unavailable, fallback to process memory
+    if (memoryBindings[code]) {
+      return res.status(403).json({ error: 'Код уже использован' });
+    }
+
+    memoryBindings[code] = deviceId;
+    return res.status(200).json({ ok: true });
+  } finally {
+    if (releaseLock) {
+      await releaseLock();
+    }
+  }
 };
