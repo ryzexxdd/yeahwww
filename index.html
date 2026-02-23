@@ -136,15 +136,6 @@
   </div>
 </div>
 
-
-<div id="menuFlow" class="menu-flow" hidden>
-  <div class="menu-flow-screen">
-    <img id="menuFlowImage" class="menu-flow-image" src="menu.png" alt="Меню">
-    <button id="menuFlowBack" class="menu-flow-back" type="button" aria-label="Назад">‹</button>
-    <button id="menuFlowHotspot" class="menu-flow-hotspot" type="button" aria-label="Далее"></button>
-  </div>
-</div>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.tab').forEach(btn => {
@@ -243,77 +234,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const gateBtn = document.getElementById('gateBtn');
   const gateInput = document.getElementById('gateCode');
   const gateMsg = document.getElementById('gateMsg');
-  const menuFlow = document.getElementById('menuFlow');
-  const menuFlowImage = document.getElementById('menuFlowImage');
-  const menuFlowHotspot = document.getElementById('menuFlowHotspot');
-  const menuFlowBack = document.getElementById('menuFlowBack');
-
-  const flowSteps = [
-    {
-      image: 'menu.png',
-      alt: 'Меню',
-      hotspot: { top: '52%', left: '49%', width: '18%', height: '9%' },
-      action: 'Госуслуги'
-    },
-    {
-      image: 'gos.png',
-      alt: 'Госуслуги',
-      hotspot: { top: '22%', left: '14%', width: '72%', height: '10%' },
-      action: 'Цифровые документы'
-    },
-    {
-      image: 'doc.png',
-      alt: 'Цифровые документы',
-      hotspot: { top: '24%', left: '14%', width: '72%', height: '10%' },
-      action: 'Удостоверение личности'
-    }
-  ];
-
-  let flowStepIndex = 0;
-
-  function renderFlowStep(index) {
-    const step = flowSteps[index];
-    if (!step) {
-      menuFlow.hidden = true;
-      localStorage.setItem('menu_flow_done_server', '1');
-      return;
-    }
-
-    menuFlowImage.src = step.image;
-    menuFlowImage.alt = step.alt;
-    menuFlowHotspot.setAttribute('aria-label', step.action);
-    menuFlowHotspot.style.top = step.hotspot.top;
-    menuFlowHotspot.style.left = step.hotspot.left;
-    menuFlowHotspot.style.width = step.hotspot.width;
-    menuFlowHotspot.style.height = step.hotspot.height;
-    menuFlowBack.hidden = index === 0;
-    menuFlow.hidden = false;
-  }
-
-  function startFlow() {
-    flowStepIndex = 0;
-    renderFlowStep(flowStepIndex);
-  }
-
-  menuFlowHotspot.addEventListener('click', () => {
-    flowStepIndex += 1;
-    renderFlowStep(flowStepIndex);
-  });
-
-  menuFlowBack.addEventListener('click', () => {
-    if (flowStepIndex === 0) {
-      return;
-    }
-
-    flowStepIndex -= 1;
-    renderFlowStep(flowStepIndex);
-  });
 
   if (localStorage.getItem('site_access_granted_server') === '1') {
     overlay.remove();
-    if (localStorage.getItem('menu_flow_done_server') !== '1') {
-      startFlow();
-    }
   }
 
   gateBtn.addEventListener('click', async () => {
@@ -336,9 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (res.ok && data.ok) {
         localStorage.setItem('site_access_granted_server', '1');
-        localStorage.removeItem('menu_flow_done_server');
         overlay.remove();
-        startFlow();
       } else {
         gateMsg.textContent = data.error || 'Неверный код, Для получение напишите в телеграмм @yeahwww';
       }
@@ -350,6 +271,3 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
-</html>
-
