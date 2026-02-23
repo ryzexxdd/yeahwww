@@ -54,7 +54,7 @@ const CODES = [
 "154852","298327","243488","987201","294714","872467","786776","637198","436533","408520"
 ];
 
-const DATA_DIR = process.env.YEAHWWW_DATA_DIR || path.join('/tmp', 'yeahwww');
+const DATA_DIR = path.join(process.cwd(), '.data');
 const STORE_FILE = path.join(DATA_DIR, 'yeahwww-code-bindings.json');
 const LOCK_FILE = path.join(DATA_DIR, 'yeahwww-code-bindings.lock');
 
@@ -80,7 +80,7 @@ async function acquireLock() {
     }
   }
 
-  throw Object.assign(new Error('Lock timeout'), { code: 'LOCK_TIMEOUT' });
+  throw new Error('Lock timeout');
 }
 
 async function readBindings() {
@@ -102,13 +102,22 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { code, deviceId } = req.body || {};
-  if (!code || !deviceId) {
+  const rawCode = req.body?.code;
+  const rawDeviceId = req.body?.deviceId;
+
+  if (rawCode === undefined || rawCode === null || !rawDeviceId) {
     return res.status(400).json({ error: 'No data' });
   }
 
-  if (!CODES.includes(code)) {
+  const code = String(rawCode).trim();
+  const deviceId = String(rawDeviceId).trim();
+
+  if (!/^\d{6}$/.test(code) || !CODES.includes(code)) {
     return res.status(403).json({ error: 'Неверный код' });
+  }
+
+  if (!deviceId) {
+    return res.status(400).json({ error: 'No data' });
   }
 
   let releaseLock;
@@ -117,8 +126,8 @@ module.exports = async (req, res) => {
 
     const bindings = await readBindings();
 
-    if (bindings[code] && bindings[code] !== deviceId) {
-      return res.status(403).json({ error: 'Код уже использован на другом устройстве' });
+    if (bindings[code]) {
+      return res.status(403).json({ error: 'Код уже использован' });
     }
 
     bindings[code] = deviceId;
@@ -126,10 +135,6 @@ module.exports = async (req, res) => {
 
     return res.status(200).json({ ok: true });
   } catch (error) {
-    if (error && error.code === 'LOCK_TIMEOUT') {
-      return res.status(503).json({ error: 'Сервис занят, попробуйте снова' });
-    }
-
     return res.status(500).json({ error: 'Ошибка проверки кода' });
   } finally {
     if (releaseLock) {
