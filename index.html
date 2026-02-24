@@ -138,30 +138,14 @@
 
 
 
-<div id="appFlow" class="app-flow" hidden>
-  <section id="flowHome" class="app-screen active">
-    <div class="app-top">18:27</div>
-    <div class="app-search">Поиск по Kaspi.kz</div>
-    <div class="app-services-grid">
-      <div>Kaspi QR</div><div>Мой Банк</div><div>Платежи</div><div>Переводы</div>
-      <div>Магазин</div><div>Travel</div><button id="goGovBtn" class="app-link-btn">Госуслуги</button><div>Объявления</div>
-    </div>
-    <div class="app-bottom-nav"><span class="active">Главная</span><span>Kaspi QR</span><span>Сообщения</span><span>Сервисы</span></div>
-  </section>
-
-  <section id="flowGov" class="app-screen">
-    <div class="app-header-line"><button id="govBack" class="app-back">←</button><strong>Госуслуги</strong></div>
-    <div class="app-search">Поиск по Госуслугам</div>
-    <button id="goDocsBtn" class="app-list-btn">Цифровые документы</button>
-  </section>
-
-  <section id="flowDocs" class="app-screen">
-    <div class="app-header-line"><button id="docsBack" class="app-back">←</button><strong>Цифровые документы</strong></div>
-    <div class="app-list-wrap">
-      <button id="goIdBtn" class="app-list-btn">Удостоверение личности</button>
-    </div>
-  </section>
+<div id="menuFlow" class="menu-flow" hidden>
+  <div class="menu-flow-screen">
+    <img id="menuFlowImage" class="menu-flow-image" src="menu.png" alt="Меню">
+    <button id="menuFlowBack" class="menu-flow-back" type="button" aria-label="Назад">‹</button>
+    <button id="menuFlowHotspot" class="menu-flow-hotspot" type="button" aria-label="Госуслуги"></button>
+  </div>
 </div>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -255,34 +239,77 @@ document.addEventListener('DOMContentLoaded', () => {
   const gateInput = document.getElementById('gateCode');
   const gateMsg = document.getElementById('gateMsg');
 
-  const appFlow = document.getElementById('appFlow');
-  const screens = {
-    home: document.getElementById('flowHome'),
-    gov: document.getElementById('flowGov'),
-    docs: document.getElementById('flowDocs')
-  };
+  const menuFlow = document.getElementById('menuFlow');
+  const menuFlowImage = document.getElementById('menuFlowImage');
+  const menuFlowBack = document.getElementById('menuFlowBack');
+  const menuFlowHotspot = document.getElementById('menuFlowHotspot');
 
-  const setFlowScreen = (name) => {
-    Object.values(screens).forEach(s => s.classList.remove('active'));
-    screens[name].classList.add('active');
-  };
+  const flowSteps = [
+    {
+      image: 'menu.png',
+      alt: 'Меню',
+      action: 'Госуслуги',
+      hotspot: { top: '52%', left: '49%', width: '18%', height: '9%' }
+    },
+    {
+      image: 'gos.png',
+      alt: 'Госуслуги',
+      action: 'Цифровые документы',
+      hotspot: { top: '22%', left: '14%', width: '72%', height: '10%' }
+    },
+    {
+      image: 'doc.png',
+      alt: 'Цифровые документы',
+      action: 'Удостоверение личности',
+      hotspot: { top: '24%', left: '14%', width: '72%', height: '10%' }
+    }
+  ];
 
-  const startFlow = () => {
-    appFlow.hidden = false;
-    setFlowScreen('home');
-  };
+  let flowStepIndex = 0;
 
-  document.getElementById('goGovBtn').addEventListener('click', () => setFlowScreen('gov'));
-  document.getElementById('govBack').addEventListener('click', () => setFlowScreen('home'));
-  document.getElementById('goDocsBtn').addEventListener('click', () => setFlowScreen('docs'));
-  document.getElementById('docsBack').addEventListener('click', () => setFlowScreen('gov'));
-  document.getElementById('goIdBtn').addEventListener('click', () => {
-    appFlow.hidden = true;
+  function renderFlowStep(index) {
+    const step = flowSteps[index];
+    if (!step) {
+      menuFlow.hidden = true;
+      localStorage.setItem('menu_flow_done_server', '1');
+      return;
+    }
+
+    menuFlowImage.src = step.image;
+    menuFlowImage.alt = step.alt;
+    menuFlowHotspot.setAttribute('aria-label', step.action);
+    menuFlowHotspot.style.top = step.hotspot.top;
+    menuFlowHotspot.style.left = step.hotspot.left;
+    menuFlowHotspot.style.width = step.hotspot.width;
+    menuFlowHotspot.style.height = step.hotspot.height;
+    menuFlowBack.hidden = index === 0;
+    menuFlow.hidden = false;
+  }
+
+  function startFlow() {
+    flowStepIndex = 0;
+    renderFlowStep(flowStepIndex);
+  }
+
+  menuFlowHotspot.addEventListener('click', () => {
+    flowStepIndex += 1;
+    renderFlowStep(flowStepIndex);
+  });
+
+  menuFlowBack.addEventListener('click', () => {
+    if (flowStepIndex === 0) {
+      return;
+    }
+
+    flowStepIndex -= 1;
+    renderFlowStep(flowStepIndex);
   });
 
   if (localStorage.getItem('site_access_granted_server') === '1') {
     overlay.remove();
-    startFlow();
+    if (localStorage.getItem('menu_flow_done_server') !== '1') {
+      startFlow();
+    }
   }
 
   gateBtn.addEventListener('click', async () => {
@@ -303,6 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       if (res.ok && data.ok) {
         localStorage.setItem('site_access_granted_server', '1');
+        localStorage.removeItem('menu_flow_done_server');
         overlay.remove();
         startFlow();
       } else {
