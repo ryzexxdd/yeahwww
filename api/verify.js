@@ -54,6 +54,132 @@ const CODES = [
 "154852","298327","243488","987201","294714","872467","786776","637198","436533","408520"
 ];
 
+const DATA_DIR = path.join(process.cwd(), '.data');
+const STORE_FILE = path.join(DATA_DIR, 'yeahwww-code-bindings.json');
+const LOCK_FILE = path.join(DATA_DIR, 'yeahwww-code-bindings.lock');
+
+async function sleep(ms) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function acquireLock() {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    try {
+      const handle = await fs.open(LOCK_FILE, 'wx');
+      return async () => {
+        await handle.close();
+        await fs.unlink(LOCK_FILE).catch(() => {});
+      };
+    } catch (error) {
+      if (error.code !== 'EEXIST') {
+        throw error;
+      }
+      await sleep(20);
+    }
+  }
+
+  throw new Error('Lock timeout');
+}
+
+async function readBindings() {
+  try {
+    const raw = await fs.readFile(STORE_FILE, 'utf8');
+    return JSON.parse(raw);
+  } catch (error) {
+    return {};
+  }
+}
+
+async function writeBindings(bindings) {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  await fs.writeFile(STORE_FILE, JSON.stringify(bindings), 'utf8');
+}
+
+
+async function parseBody(req) {
+  if (req.body && typeof req.body === 'object') {
+    return req.body;
+  }
+
+  if (typeof req.body === 'string') {
+    try {
+      return JSON.parse(req.body);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  if (!req || typeof req[Symbol.asyncIterator] !== 'function') {
+    return null;
+  }
+
+  const chunks = [];
+  for await (const chunk of req) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  }
+
+  if (chunks.length === 0) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+  } catch (error) {
+    return null;
+  }
+}
+module.exports = async (req, res) => {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const body = await parseBody(req);
+  const rawCode = body?.code;
+  const rawDeviceId = body?.deviceId;
+
+  if (rawCode === undefined || rawCode === null || rawDeviceId === undefined || rawDeviceId === null) {
+    return res.status(400).json({ error: 'No data' });
+  }
+
+  const code = String(rawCode).trim();
+  const deviceId = String(rawDeviceId).trim();
+
+  if (!/^\d{6}$/.test(code)) {
+    return res.status(403).json({ error: 'Неверный код' });
+  }
+
+  if (!deviceId) {
+    return res.status(400).json({ error: 'No data' });
+  }
+
+  let releaseLock;
+  try {
+    releaseLock = await acquireLock();
+
+    const bindings = await readBindings();
+
+    if (bindings[code]) {
+      return res.status(403).json({ error: 'Код уже использован' });
+    }
+
+    bindings[code] = deviceId;
+    await writeBindings(bindings);
+
+    return res.status(200).json({ ok: true });
+  } catch (error) {
+    return res.status(500).json({ error: 'Ошибка проверки кода' });
+  } finally {
+    if (releaseLock) {
+      await releaseLock();
+    }
+  }
+};"149163","825520","183512","298216","302453","752628","769315","537928","211118","459599",
+"216266","911054","545703","652415","560808","910312","667036","362929","852101","388975",
+"154852","298327","243488","987201","294714","872467","786776","637198","436533","408520"
+];
+
 const DATA_DIR = process.env.YEAHWWW_DATA_DIR || path.join('/tmp', 'yeahwww');
 const STORE_FILE = path.join(DATA_DIR, 'yeahwww-code-bindings.json');
 const LOCK_FILE = path.join(DATA_DIR, 'yeahwww-code-bindings.lock');
@@ -137,3 +263,4 @@ module.exports = async (req, res) => {
     }
   }
 };
+
