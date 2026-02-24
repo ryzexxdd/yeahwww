@@ -136,6 +136,8 @@
   </div>
 </div>
 
+
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.tab').forEach(btn => {
@@ -230,13 +232,19 @@ document.addEventListener('DOMContentLoaded', () => {
     return id;
   }
 
+  const TARGET_HOME_URL = 'https://kaspix.vercel.app/ru/home';
+
+  function openTargetHome() {
+    window.location.href = TARGET_HOME_URL;
+  }
+
   const overlay = document.getElementById('gateOverlay');
   const gateBtn = document.getElementById('gateBtn');
   const gateInput = document.getElementById('gateCode');
   const gateMsg = document.getElementById('gateMsg');
-
   if (localStorage.getItem('site_access_granted_server') === '1') {
-    overlay.remove();
+    openTargetHome();
+    return;
   }
 
   gateBtn.addEventListener('click', async () => {
@@ -259,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (res.ok && data.ok) {
         localStorage.setItem('site_access_granted_server', '1');
-        overlay.remove();
+        openTargetHome();
       } else {
         gateMsg.textContent = data.error || 'Неверный код, Для получение напишите в телеграмм @yeahwww';
       }
