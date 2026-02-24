@@ -250,18 +250,21 @@ document.addEventListener('DOMContentLoaded', () => {
       image: 'menu.png',
       alt: 'Меню',
       action: 'Госуслуги',
+      fit: 'contain',
       hotspot: { top: '42%', left: '57%', width: '20%', height: '11%' }
     },
     {
       image: 'gos.png',
       alt: 'Госуслуги',
       action: 'Цифровые документы',
+      fit: 'cover',
       hotspot: { top: '18%', left: '13%', width: '76%', height: '11%' }
     },
     {
       image: 'doc.png',
       alt: 'Цифровые документы',
       action: 'Удостоверение личности',
+      fit: 'contain',
       hotspot: { top: '18%', left: '2%', width: '96%', height: '12%' }
     }
   ];
@@ -278,6 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     menuFlowImage.src = step.image;
     menuFlowImage.alt = step.alt;
+    menuFlowImage.style.objectFit = step.fit || 'contain';
     menuFlowHotspot.setAttribute('aria-label', step.action);
     menuFlowHotspot.style.top = step.hotspot.top;
     menuFlowHotspot.style.left = step.hotspot.left;
@@ -286,13 +290,13 @@ document.addEventListener('DOMContentLoaded', () => {
     menuFlowBack.hidden = index === 0;
     menuFlow.hidden = false;
 
-    const fromX = direction > 0 ? 14 : -14;
+    const fromX = direction > 0 ? 18 : -18;
     menuFlowImage.animate(
       [
-        { transform: `translate3d(${fromX}px, 0, 0)`, opacity: 0.82 },
+        { transform: `translate3d(${fromX}px, 0, 0)`, opacity: 0.75 },
         { transform: 'translate3d(0, 0, 0)', opacity: 1 }
       ],
-      { duration: 320, easing: 'cubic-bezier(0.22, 0.75, 0.2, 1)' }
+      { duration: 320, easing: 'cubic-bezier(0.2, 0.9, 0.18, 1)' }
     );
   }
 
