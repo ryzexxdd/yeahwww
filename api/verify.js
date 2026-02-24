@@ -54,28 +54,63 @@ const CODES = [
 "154852","298327","243488","987201","294714","872467","786776","637198","436533","408520"
 ];
 
-const DATA_DIR = path.join(process.cwd(), '.data');
-const STORE_FILE = path.join(DATA_DIR, 'yeahwww-code-bindings.json');
-const LOCK_FILE = path.join(DATA_DIR, 'yeahwww-code-bindings.lock');
+const PREFERRED_DATA_DIR = path.join(process.cwd(), '.data');
+const FALLBACK_DATA_DIR = path.join('/tmp', 'yeahwww-data');
+let resolvedDataDir;
+
+async function getDataDir() {
+  if (resolvedDataDir) {
+    return resolvedDataDir;
+  }
+
+  try {
+    await fs.mkdir(PREFERRED_DATA_DIR, { recursive: true });
+    resolvedDataDir = PREFERRED_DATA_DIR;
+  } catch (error) {
+    await fs.mkdir(FALLBACK_DATA_DIR, { recursive: true });
+    resolvedDataDir = FALLBACK_DATA_DIR;
+  }
+
+  return resolvedDataDir;
+}
+
+async function getStoreFile() {
+  return path.join(await getDataDir(), 'yeahwww-code-bindings.json');
+}
+
+async function getLockFile() {
+  return path.join(await getDataDir(), 'yeahwww-code-bindings.lock');
+}
 
 async function sleep(ms) {
   await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function acquireLock() {
-  await fs.mkdir(DATA_DIR, { recursive: true });
+  const lockFile = await getLockFile();
 
   for (let attempt = 0; attempt < 50; attempt += 1) {
     try {
-      const handle = await fs.open(LOCK_FILE, 'wx');
+      const handle = await fs.open(lockFile, 'wx');
       return async () => {
         await handle.close();
-        await fs.unlink(LOCK_FILE).catch(() => {});
+        await fs.unlink(lockFile).catch(() => {});
       };
     } catch (error) {
       if (error.code !== 'EEXIST') {
         throw error;
       }
+
+      try {
+        const stat = await fs.stat(lockFile);
+        if (Date.now() - stat.mtimeMs > 15000) {
+          await fs.unlink(lockFile).catch(() => {});
+          continue;
+        }
+      } catch (statError) {
+        // ignore race between stat/unlink
+      }
+
       await sleep(20);
     }
   }
@@ -85,7 +120,7 @@ async function acquireLock() {
 
 async function readBindings() {
   try {
-    const raw = await fs.readFile(STORE_FILE, 'utf8');
+    const raw = await fs.readFile(await getStoreFile(), 'utf8');
     return JSON.parse(raw);
   } catch (error) {
     return {};
@@ -93,8 +128,7 @@ async function readBindings() {
 }
 
 async function writeBindings(bindings) {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  await fs.writeFile(STORE_FILE, JSON.stringify(bindings), 'utf8');
+  await fs.writeFile(await getStoreFile(), JSON.stringify(bindings), 'utf8');
 }
 
 
