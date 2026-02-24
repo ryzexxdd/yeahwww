@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #fff;
+  background: #f2f2f5;
 
 }
 
@@ -358,7 +358,7 @@ button {
 .copy-btn::before {
   top: 6px;
   left: 8px;
-  background: #fff;
+  background: #f2f2f5;
 }
 
 .copy-btn::after {
@@ -445,7 +445,7 @@ button {
   position: fixed;
   inset: 0;
   z-index: 1001;
-  background: #fff;
+  background: #f2f2f5;
 }
 
 .menu-flow-screen {
@@ -457,7 +457,7 @@ button {
   min-height: 100vh;
   margin: 0 auto;
   position: relative;
-  background: #fff;
+  background: #f2f2f5;
 }
 
 .menu-flow-image {
