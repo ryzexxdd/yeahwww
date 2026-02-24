@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
       image: 'menu.png',
       alt: 'Меню',
       action: 'Госуслуги',
-      hotspot: { top: '44%', left: '57%', width: '20%', height: '11%' }
+      hotspot: { top: '42%', left: '57%', width: '20%', height: '11%' }
     },
     {
       image: 'gos.png',
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let flowStepIndex = 0;
 
-  function renderFlowStep(index) {
+  function renderFlowStep(index, direction = 1) {
     const step = flowSteps[index];
     if (!step) {
       menuFlow.hidden = true;
@@ -285,16 +285,25 @@ document.addEventListener('DOMContentLoaded', () => {
     menuFlowHotspot.style.height = step.hotspot.height;
     menuFlowBack.hidden = index === 0;
     menuFlow.hidden = false;
+
+    const fromX = direction > 0 ? 18 : -18;
+    menuFlowImage.animate(
+      [
+        { transform: `translate3d(${fromX}px, 0, 0)`, opacity: 0.75 },
+        { transform: 'translate3d(0, 0, 0)', opacity: 1 }
+      ],
+      { duration: 230, easing: 'cubic-bezier(0.22, 0.8, 0.2, 1)' }
+    );
   }
 
   function startFlow() {
     flowStepIndex = 0;
-    renderFlowStep(flowStepIndex);
+    renderFlowStep(flowStepIndex, 1);
   }
 
   menuFlowHotspot.addEventListener('click', () => {
     flowStepIndex += 1;
-    renderFlowStep(flowStepIndex);
+    renderFlowStep(flowStepIndex, 1);
   });
 
   menuFlowBack.addEventListener('click', () => {
@@ -303,13 +312,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     flowStepIndex -= 1;
-    renderFlowStep(flowStepIndex);
+    renderFlowStep(flowStepIndex, -1);
   });
 
   docBackBtn.addEventListener('click', () => {
     if (localStorage.getItem('site_access_granted_server') === '1') {
       flowStepIndex = 2;
-      renderFlowStep(flowStepIndex);
+      renderFlowStep(flowStepIndex, -1);
       return;
     }
 
