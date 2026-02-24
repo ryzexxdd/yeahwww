@@ -286,13 +286,13 @@ document.addEventListener('DOMContentLoaded', () => {
     menuFlowBack.hidden = index === 0;
     menuFlow.hidden = false;
 
-    const fromX = direction > 0 ? 18 : -18;
+    const fromX = direction > 0 ? 14 : -14;
     menuFlowImage.animate(
       [
-        { transform: `translate3d(${fromX}px, 0, 0)`, opacity: 0.75 },
+        { transform: `translate3d(${fromX}px, 0, 0)`, opacity: 0.82 },
         { transform: 'translate3d(0, 0, 0)', opacity: 1 }
       ],
-      { duration: 230, easing: 'cubic-bezier(0.22, 0.8, 0.2, 1)' }
+      { duration: 320, easing: 'cubic-bezier(0.22, 0.75, 0.2, 1)' }
     );
   }
 
