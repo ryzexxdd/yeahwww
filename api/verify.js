@@ -180,7 +180,7 @@ module.exports = async (req, res) => {
   const code = String(rawCode).trim();
   const deviceId = String(rawDeviceId).trim();
 
-  if (!/^\d{6}$/.test(code)) {
+  if (!/^\d{6}$/.test(code) || !CODES.includes(code)) {
     return res.status(403).json({ error: 'Неверный код' });
   }
 
