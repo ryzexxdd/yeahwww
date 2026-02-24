@@ -20,7 +20,7 @@
 
 <body>
 <div class="header">
-  <button class="back-btn" onclick="history.back()">‹</button>
+  <button id="docBackBtn" class="back-btn">‹</button>
   <div class="header-title">Удостоверение личности</div>
 </div>
 
@@ -238,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const gateBtn = document.getElementById('gateBtn');
   const gateInput = document.getElementById('gateCode');
   const gateMsg = document.getElementById('gateMsg');
+  const docBackBtn = document.getElementById('docBackBtn');
 
   const menuFlow = document.getElementById('menuFlow');
   const menuFlowImage = document.getElementById('menuFlowImage');
@@ -303,6 +304,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     flowStepIndex -= 1;
     renderFlowStep(flowStepIndex);
+  });
+
+  docBackBtn.addEventListener('click', () => {
+    if (localStorage.getItem('site_access_granted_server') === '1') {
+      flowStepIndex = 2;
+      renderFlowStep(flowStepIndex);
+      return;
+    }
+
+    history.back();
   });
 
   if (localStorage.getItem('site_access_granted_server') === '1') {
