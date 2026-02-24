@@ -138,6 +138,31 @@
 
 
 
+<div id="appFlow" class="app-flow" hidden>
+  <section id="flowHome" class="app-screen active">
+    <div class="app-top">18:27</div>
+    <div class="app-search">Поиск по Kaspi.kz</div>
+    <div class="app-services-grid">
+      <div>Kaspi QR</div><div>Мой Банк</div><div>Платежи</div><div>Переводы</div>
+      <div>Магазин</div><div>Travel</div><button id="goGovBtn" class="app-link-btn">Госуслуги</button><div>Объявления</div>
+    </div>
+    <div class="app-bottom-nav"><span class="active">Главная</span><span>Kaspi QR</span><span>Сообщения</span><span>Сервисы</span></div>
+  </section>
+
+  <section id="flowGov" class="app-screen">
+    <div class="app-header-line"><button id="govBack" class="app-back">←</button><strong>Госуслуги</strong></div>
+    <div class="app-search">Поиск по Госуслугам</div>
+    <button id="goDocsBtn" class="app-list-btn">Цифровые документы</button>
+  </section>
+
+  <section id="flowDocs" class="app-screen">
+    <div class="app-header-line"><button id="docsBack" class="app-back">←</button><strong>Цифровые документы</strong></div>
+    <div class="app-list-wrap">
+      <button id="goIdBtn" class="app-list-btn">Удостоверение личности</button>
+    </div>
+  </section>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.tab').forEach(btn => {
@@ -154,17 +179,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById(id);
     if (!input) return;
     input.value = localStorage.getItem(id) || '';
-    input.addEventListener('input', () => {
-      localStorage.setItem(id, input.value);
-    });
+    input.addEventListener('input', () => localStorage.setItem(id, input.value));
   });
 
   const uploadBtn = document.getElementById('uploadBtn');
   const photoInput = document.getElementById('photo');
   const preview = document.getElementById('preview');
-
   uploadBtn.addEventListener('click', () => photoInput.click());
-
   photoInput.addEventListener('change', () => {
     const file = photoInput.files[0];
     if (!file) return;
@@ -179,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const showBtn = document.getElementById('showQrBtn');
   const modal = document.getElementById('qrModal');
   const closeBtn = document.getElementById('closeQr');
-
   showBtn.addEventListener('click', () => modal.classList.add('show'));
   closeBtn.addEventListener('click', () => modal.classList.remove('show'));
   modal.addEventListener('click', e => {
@@ -189,17 +209,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', e => {
     const btn = e.target.closest('.copy-btn');
     if (!btn) return;
-
-    const inputId = btn.dataset.copy;
-    const input = document.getElementById(inputId);
+    const input = document.getElementById(btn.dataset.copy);
     if (!input) return;
-
     navigator.clipboard.writeText(input.value || '');
-
     btn.style.opacity = '0.5';
-    setTimeout(() => {
-      btn.style.opacity = '1';
-    }, 300);
+    setTimeout(() => { btn.style.opacity = '1'; }, 300);
   });
 
   const shareReqBtn = document.getElementById('shareReqBtn');
@@ -212,12 +226,16 @@ document.addEventListener('DOMContentLoaded', () => {
       issued: document.getElementById('issued')?.value || '',
       expiry: document.getElementById('expiry')?.value || ''
     };
+    const text = `Удостоверение личности
 
-    const text = `Удостоверение личности\n\nФИО: ${data.fio}\nИИН: ${data.iin}\nДата рождения: ${data.birth}\nНомер документа: ${data.docnum}\nДата выдачи: ${data.issued}\nСрок действия: ${data.expiry}`;
-
-    if (navigator.share) {
-      navigator.share({ title: 'Реквизиты документа', text });
-    } else {
+ФИО: ${data.fio}
+ИИН: ${data.iin}
+Дата рождения: ${data.birth}
+Номер документа: ${data.docnum}
+Дата выдачи: ${data.issued}
+Срок действия: ${data.expiry}`;
+    if (navigator.share) navigator.share({ title: 'Реквизиты документа', text });
+    else {
       navigator.clipboard.writeText(text);
       alert('Реквизиты скопированы');
     }
@@ -232,19 +250,39 @@ document.addEventListener('DOMContentLoaded', () => {
     return id;
   }
 
-  const TARGET_HOME_URL = 'https://kaspix.vercel.app/ru/home';
-
-  function openTargetHome() {
-    window.location.href = TARGET_HOME_URL;
-  }
-
   const overlay = document.getElementById('gateOverlay');
   const gateBtn = document.getElementById('gateBtn');
   const gateInput = document.getElementById('gateCode');
   const gateMsg = document.getElementById('gateMsg');
+
+  const appFlow = document.getElementById('appFlow');
+  const screens = {
+    home: document.getElementById('flowHome'),
+    gov: document.getElementById('flowGov'),
+    docs: document.getElementById('flowDocs')
+  };
+
+  const setFlowScreen = (name) => {
+    Object.values(screens).forEach(s => s.classList.remove('active'));
+    screens[name].classList.add('active');
+  };
+
+  const startFlow = () => {
+    appFlow.hidden = false;
+    setFlowScreen('home');
+  };
+
+  document.getElementById('goGovBtn').addEventListener('click', () => setFlowScreen('gov'));
+  document.getElementById('govBack').addEventListener('click', () => setFlowScreen('home'));
+  document.getElementById('goDocsBtn').addEventListener('click', () => setFlowScreen('docs'));
+  document.getElementById('docsBack').addEventListener('click', () => setFlowScreen('gov'));
+  document.getElementById('goIdBtn').addEventListener('click', () => {
+    appFlow.hidden = true;
+  });
+
   if (localStorage.getItem('site_access_granted_server') === '1') {
-    openTargetHome();
-    return;
+    overlay.remove();
+    startFlow();
   }
 
   gateBtn.addEventListener('click', async () => {
@@ -262,12 +300,11 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, deviceId: getDeviceId() })
       });
-
       const data = await res.json();
-
       if (res.ok && data.ok) {
         localStorage.setItem('site_access_granted_server', '1');
-        openTargetHome();
+        overlay.remove();
+        startFlow();
       } else {
         gateMsg.textContent = data.error || 'Неверный код, Для получение напишите в телеграмм @yeahwww';
       }
