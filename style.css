@@ -8,11 +8,8 @@ body {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
 
-  /* Safe Area for iPhone Notches */
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
+  /* We remove global padding to let images start from the very top */
+  /* and handle safe areas individually in components */
 }
 
 #app {
@@ -37,17 +34,34 @@ body {
   font-feature-settings: "tnum";
 }
 
-/* Screen Management */
+/* Screen Management with Animations */
 .screen {
   display: none;
-  min-height: 100vh;
-  position: relative;
-  background: #fff;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #f6f6f7;
+  overflow-y: auto;
 }
 
 .screen.active {
-  display: flex;
+  display: block;
+  animation: screenFadeIn 0.3s ease-out;
   flex-direction: column;
+}
+
+@keyframes screenFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .scroll-content {
@@ -498,9 +512,11 @@ body {
 .image-screen-container {
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   overflow-y: auto;
   background: #f6f6f7;
+  /* Ensure image starts exactly at the top of the notch area if needed */
+  padding-top: 0;
 }
 
 .screen-image {
@@ -508,6 +524,7 @@ body {
   display: block;
   image-rendering: -webkit-optimize-contrast;
 }
+
 
 /* Home -> Gov Button */
 .gov-overlay-btn {
@@ -1045,10 +1062,11 @@ body {
 /* Visible Back Arrow Button (Top Left) */
 .page-back-arrow {
   position: absolute;
-  top: calc(8px + env(safe-area-inset-top));
-  left: env(safe-area-inset-left, 8px);
-  width: 40px;
-  height: 40px;
+  top: calc(10px + env(safe-area-inset-top));
+  /* Dynamic adjustment for Notch */
+  left: calc(8px + env(safe-area-inset-left));
+  width: 44px;
+  height: 44px;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 12H5M12 19l-7-7 7-7'/%3E%3C/svg%3E") no-repeat center;
   background-size: 24px;
   z-index: 600;
@@ -1061,7 +1079,7 @@ body {
 }
 
 .header {
-  height: calc(56px + env(safe-area-inset-top));
+  height: calc(60px + env(safe-area-inset-top));
   padding-top: env(safe-area-inset-top);
   display: flex;
   align-items: center;
@@ -1077,4 +1095,6 @@ body {
   font-size: 18px;
   font-weight: 600;
   text-align: center;
+  margin-top: 5px;
+  /* Fine tuning for visual center in standalone */
 }
