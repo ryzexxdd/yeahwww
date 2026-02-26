@@ -375,7 +375,6 @@ button {
   display: block;
   flex-shrink: 0;
 }
-
 body.app-locked #app {
   visibility: hidden;
   pointer-events: none;
