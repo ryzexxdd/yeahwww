@@ -1,5 +1,5 @@
-const fs = require('node:fs/promises');␊
-const path = require('node:path');␊
+const fs = require('node:fs/promises');
+const path = require('node:path');
 
 const CODES = [
 "104583","127904","138662","149275","152849","163407","174296","185930","196742","207518",
@@ -25,7 +25,10 @@ const CODES = [
 "702996","554055","564724","448697","147086","879252","947236","181035","859376","939486",
 "692291","234790","118437","921145","242825","848098","623887","848126","993096","297960",
 "191231","159710","418710","712036","862924","159614","694405","221877","411045","796590",
-@@ -32,65 +32,104 @@ const CODES = [
+"420587","569162","310102","988160","893668","683163","340116","758444","772952","184166",
+"295116","147886","543554","860427","919040","615373","122539","336766","908892","175491",
+"940040","372550","554308","607112","397466","135900","463725","828505","711097","632563",
+"491102","970323","663851","138876","144743","626164","620878","758535","414838","487629",
 "416670","366021","957777","192802","210063","668286","453366","239680","919289","411556",
 "675943","948752","941946","792873","647637","256068","671600","815955","148338","677223",
 "771540","803224","319583","469729","983465","551320","766007","131161","685063","766782",
@@ -99,22 +102,32 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { code, deviceId } = req.body || {};
-  if (!code || !deviceId) {
+  const rawCode = req.body?.code;
+  const rawDeviceId = req.body?.deviceId;
+
+  if (rawCode === undefined || rawCode === null || !rawDeviceId) {
     return res.status(400).json({ error: 'No data' });
   }
 
-  if (!CODES.includes(code)) {
+  const code = String(rawCode).trim();
+  const deviceId = String(rawDeviceId).trim();
+
+  if (!/^\d{6}$/.test(code) || !CODES.includes(code)) {
     return res.status(403).json({ error: 'Неверный код' });
   }
+
+  if (!deviceId) {
+    return res.status(400).json({ error: 'No data' });
+  }
+
   let releaseLock;
   try {
     releaseLock = await acquireLock();
 
     const bindings = await readBindings();
 
-    if (bindings[code] && bindings[code] !== deviceId) {
-      return res.status(403).json({ error: 'Код уже использован на другом устройстве' });
+    if (bindings[code]) {
+      return res.status(403).json({ error: 'Код уже использован' });
     }
 
     bindings[code] = deviceId;
