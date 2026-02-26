@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta name="theme-color" content="#ffffff">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta charset="UTF-8"> 
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>yeahwww</title>
@@ -20,32 +19,6 @@
 </head>
 
 <body>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-
-  document.querySelectorAll('.tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(btn.dataset.tab).classList.add('active');
-    });
-  });
-
-  const fields = ['fio', 'iin', 'birth', 'docnum', 'issued', 'expiry'];
-  fields.forEach(id => {
-    const input = document.getElementById(id);
-    if (!input) return;
-    input.value = localStorage.getItem(id) || '';
-    input.addEventListener('input', () => {
-      localStorage.setItem(id, input.value);
-    });
-  });
-
-});
-</script>
-
 <div class="header">
   <button class="back-btn" onclick="history.back()">‹</button>
   <div class="header-title">Удостоверение личности</div>
@@ -78,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <section id="req" class="screen">
   <div class="form">
-
     <div class="field">
       <label>ФИО</label>
       <div class="copy-field">
@@ -128,12 +100,11 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
 
     <div class="actions">
-      <button class="outline">
+      <button class="outline" id="shareReqBtn">
         <span class="btn-icon share"></span>
         <span>Отправить реквизиты</span>
       </button>
     </div>
-
   </div>
 </section>
 
@@ -146,15 +117,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <div class="qr-content">
       <div class="qr-text">Покажите QR-код сотруднику</div>
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=yeahwww" class="qr-image">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=yeahwww" class="qr-image" alt="QR-код">
       <div class="qr-subtext">или скажите код</div>
       <div class="qr-code">983517</div>
     </div>
   </div>
 </div>
 
+<div id="gateOverlay" class="gate-overlay">
+  <div class="gate-card">
+    <div class="gate-title">Получение доступа</div>
+    <div class="gate-subtitle">Введите код доступа</div>
+
+    <input id="gateCode" class="code-input" maxlength="6" inputmode="numeric" placeholder="XXXXXX">
+    <button id="gateBtn" class="gate-btn">Подтвердить код</button>
+    <div id="gateMsg" class="gate-msg"></div>
+    <a href="https://t.me/yeahwww" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px;color:#2b6bcc;text-decoration:none;font-size:14px;">Чтобы получить код напишите в Telegram @yeahwww</a>
+  </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  const fields = ['fio', 'iin', 'birth', 'docnum', 'issued', 'expiry'];
+  fields.forEach(id => {
+    const input = document.getElementById(id);
+    if (!input) return;
+    input.value = localStorage.getItem(id) || '';
+    input.addEventListener('input', () => {
+      localStorage.setItem(id, input.value);
+    });
+  });
 
   const uploadBtn = document.getElementById('uploadBtn');
   const photoInput = document.getElementById('photo');
@@ -173,79 +174,100 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.readAsDataURL(file);
   });
 
-});
-</script>
-
-<script>
-(function () {
   const showBtn = document.getElementById('showQrBtn');
   const modal = document.getElementById('qrModal');
   const closeBtn = document.getElementById('closeQr');
-
-  if (!showBtn || !modal || !closeBtn) return;
 
   showBtn.addEventListener('click', () => modal.classList.add('show'));
   closeBtn.addEventListener('click', () => modal.classList.remove('show'));
   modal.addEventListener('click', e => {
     if (e.target === modal) modal.classList.remove('show');
   });
-})();
-</script>
 
-<script>
-document.addEventListener('click', e => {
-  const btn = e.target.closest('.copy-btn');
-  if (!btn) return;
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.copy-btn');
+    if (!btn) return;
 
-  const inputId = btn.dataset.copy;
-  const input = document.getElementById(inputId);
-  if (!input) return;
+    const inputId = btn.dataset.copy;
+    const input = document.getElementById(inputId);
+    if (!input) return;
 
-  navigator.clipboard.writeText(input.value || '');
+    navigator.clipboard.writeText(input.value || '');
 
-  btn.style.opacity = '0.5';
-  setTimeout(() => btn.style.opacity = '1', 300);
-});
-</script>
+    btn.style.opacity = '0.5';
+    setTimeout(() => {
+      btn.style.opacity = '1';
+    }, 300);
+  });
 
-<script>
-document.addEventListener('click', e => {
-  const btn = e.target.closest('.outline');
-  if (!btn) return;
-  if (!btn.textContent.includes('Отправить реквизиты')) return;
+  const shareReqBtn = document.getElementById('shareReqBtn');
+  shareReqBtn.addEventListener('click', () => {
+    const data = {
+      fio: document.getElementById('fio')?.value || '',
+      iin: document.getElementById('iin')?.value || '',
+      birth: document.getElementById('birth')?.value || '',
+      docnum: document.getElementById('docnum')?.value || '',
+      issued: document.getElementById('issued')?.value || '',
+      expiry: document.getElementById('expiry')?.value || ''
+    };
 
-  const data = {
-    fio: document.getElementById('fio')?.value || '',
-    iin: document.getElementById('iin')?.value || '',
-    birth: document.getElementById('birth')?.value || '',
-    docnum: document.getElementById('docnum')?.value || '',
-    issued: document.getElementById('issued')?.value || '',
-    expiry: document.getElementById('expiry')?.value || ''
-  };
+    const text = `Удостоверение личности\n\nФИО: ${data.fio}\nИИН: ${data.iin}\nДата рождения: ${data.birth}\nНомер документа: ${data.docnum}\nДата выдачи: ${data.issued}\nСрок действия: ${data.expiry}`;
 
-  const text =
-`Удостоверение личности
+    if (navigator.share) {
+      navigator.share({ title: 'Реквизиты документа', text });
+    } else {
+      navigator.clipboard.writeText(text);
+      alert('Реквизиты скопированы');
+    }
+  });
 
-ФИО: ${data.fio}
-ИИН: ${data.iin}
-Дата рождения: ${data.birth}
-Номер документа: ${data.docnum}
-Дата выдачи: ${data.issued}
-Срок действия: ${data.expiry}`;
-
-  if (navigator.share) {
-    navigator.share({ title: 'Реквизиты документа', text });
-  } else {
-    navigator.clipboard.writeText(text);
-    alert('Реквизиты скопированы');
+  function getDeviceId() {
+    let id = localStorage.getItem('device_id_server');
+    if (!id) {
+      id = crypto.randomUUID ? crypto.randomUUID() : `dev-${Date.now()}`;
+      localStorage.setItem('device_id_server', id);
+    }
+    return id;
   }
+
+  const overlay = document.getElementById('gateOverlay');
+  const gateBtn = document.getElementById('gateBtn');
+  const gateInput = document.getElementById('gateCode');
+  const gateMsg = document.getElementById('gateMsg');
+
+  if (localStorage.getItem('site_access_granted_server') === '1') {
+    overlay.remove();
+  }
+
+  gateBtn.addEventListener('click', async () => {
+    const code = gateInput.value.trim();
+    if (!/^\d{6}$/.test(code)) {
+      gateMsg.textContent = 'Введите 6 цифр';
+      return;
+    }
+
+    gateMsg.textContent = 'Проверка...';
+
+    try {
+      const res = await fetch('/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, deviceId: getDeviceId() })
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.ok) {
+        localStorage.setItem('site_access_granted_server', '1');
+        overlay.remove();
+      } else {
+        gateMsg.textContent = data.error || 'Неверный код';
+      }
+    } catch (error) {
+      gateMsg.textContent = 'Ошибка сети, попробуйте снова';
+    }
+  });
 });
 </script>
-
 </body>
 </html>
-
-</body>
-</html>
-
-
