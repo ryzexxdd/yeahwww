@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('site_access_granted_server', '1');
         overlay.remove();
       } else {
-        gateMsg.textContent = data.error || 'Неверный код';
+        gateMsg.textContent = data.error || 'Неверный код, Для получение напишите в телеграмм @yeahwww';
       }
     } catch (error) {
       gateMsg.textContent = 'Ошибка сети, попробуйте снова';
