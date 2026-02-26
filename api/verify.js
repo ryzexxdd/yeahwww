@@ -1,5 +1,5 @@
-const fs = require('node:fs/promises');
-const path = require('node:path');
+const fs = require('node:fs/promises');␊
+const path = require('node:path');␊
 
 const CODES = [
 "104583","127904","138662","149275","152849","163407","174296","185930","196742","207518",
@@ -25,10 +25,7 @@ const CODES = [
 "702996","554055","564724","448697","147086","879252","947236","181035","859376","939486",
 "692291","234790","118437","921145","242825","848098","623887","848126","993096","297960",
 "191231","159710","418710","712036","862924","159614","694405","221877","411045","796590",
-"420587","569162","310102","988160","893668","683163","340116","758444","772952","184166",
-"295116","147886","543554","860427","919040","615373","122539","336766","908892","175491",
-"940040","372550","554308","607112","397466","135900","463725","828505","711097","632563",
-"491102","970323","663851","138876","144743","626164","620878","758535","414838","487629",
+@@ -32,65 +32,104 @@ const CODES = [
 "416670","366021","957777","192802","210063","668286","453366","239680","919289","411556",
 "675943","948752","941946","792873","647637","256068","671600","815955","148338","677223",
 "771540","803224","319583","469729","983465","551320","766007","131161","685063","766782",
@@ -54,63 +51,28 @@ const CODES = [
 "154852","298327","243488","987201","294714","872467","786776","637198","436533","408520"
 ];
 
-const PREFERRED_DATA_DIR = path.join(process.cwd(), '.data');
-const FALLBACK_DATA_DIR = path.join('/tmp', 'yeahwww-data');
-let resolvedDataDir;
-
-async function getDataDir() {
-  if (resolvedDataDir) {
-    return resolvedDataDir;
-  }
-
-  try {
-    await fs.mkdir(PREFERRED_DATA_DIR, { recursive: true });
-    resolvedDataDir = PREFERRED_DATA_DIR;
-  } catch (error) {
-    await fs.mkdir(FALLBACK_DATA_DIR, { recursive: true });
-    resolvedDataDir = FALLBACK_DATA_DIR;
-  }
-
-  return resolvedDataDir;
-}
-
-async function getStoreFile() {
-  return path.join(await getDataDir(), 'yeahwww-code-bindings.json');
-}
-
-async function getLockFile() {
-  return path.join(await getDataDir(), 'yeahwww-code-bindings.lock');
-}
+const DATA_DIR = path.join(process.cwd(), '.data');
+const STORE_FILE = path.join(DATA_DIR, 'yeahwww-code-bindings.json');
+const LOCK_FILE = path.join(DATA_DIR, 'yeahwww-code-bindings.lock');
 
 async function sleep(ms) {
   await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function acquireLock() {
-  const lockFile = await getLockFile();
+  await fs.mkdir(DATA_DIR, { recursive: true });
 
   for (let attempt = 0; attempt < 50; attempt += 1) {
     try {
-      const handle = await fs.open(lockFile, 'wx');
+      const handle = await fs.open(LOCK_FILE, 'wx');
       return async () => {
         await handle.close();
-        await fs.unlink(lockFile).catch(() => {});
+        await fs.unlink(LOCK_FILE).catch(() => {});
       };
     } catch (error) {
       if (error.code !== 'EEXIST') {
         throw error;
       }
-
-      try {
-        const stat = await fs.stat(lockFile);
-        if (Date.now() - stat.mtimeMs > 15000) {
-          await fs.unlink(lockFile).catch(() => {});
-          continue;
-        }
-      } catch (statError) {
-        // ignore race between stat/unlink
-      }
-
       await sleep(20);
     }
   }
@@ -120,7 +82,7 @@ async function acquireLock() {
 
 async function readBindings() {
   try {
-    const raw = await fs.readFile(await getStoreFile(), 'utf8');
+    const raw = await fs.readFile(STORE_FILE, 'utf8');
     return JSON.parse(raw);
   } catch (error) {
     return {};
@@ -128,74 +90,31 @@ async function readBindings() {
 }
 
 async function writeBindings(bindings) {
-  await fs.writeFile(await getStoreFile(), JSON.stringify(bindings), 'utf8');
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  await fs.writeFile(STORE_FILE, JSON.stringify(bindings), 'utf8');
 }
 
-
-async function parseBody(req) {
-  if (req.body && typeof req.body === 'object') {
-    return req.body;
-  }
-
-  if (typeof req.body === 'string') {
-    try {
-      return JSON.parse(req.body);
-    } catch (error) {
-      return null;
-    }
-  }
-
-  if (!req || typeof req[Symbol.asyncIterator] !== 'function') {
-    return null;
-  }
-
-  const chunks = [];
-  for await (const chunk of req) {
-    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-  }
-
-  if (chunks.length === 0) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(Buffer.concat(chunks).toString('utf8'));
-  } catch (error) {
-    return null;
-  }
-}
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const body = await parseBody(req);
-  const rawCode = body?.code;
-  const rawDeviceId = body?.deviceId;
-
-  if (rawCode === undefined || rawCode === null || rawDeviceId === undefined || rawDeviceId === null) {
+  const { code, deviceId } = req.body || {};
+  if (!code || !deviceId) {
     return res.status(400).json({ error: 'No data' });
   }
 
-  const code = String(rawCode).trim();
-  const deviceId = String(rawDeviceId).trim();
-
-  if (!/^\d{6}$/.test(code) || !CODES.includes(code)) {
+  if (!CODES.includes(code)) {
     return res.status(403).json({ error: 'Неверный код' });
   }
-
-  if (!deviceId) {
-    return res.status(400).json({ error: 'No data' });
-  }
-
   let releaseLock;
   try {
     releaseLock = await acquireLock();
 
     const bindings = await readBindings();
 
-    if (bindings[code]) {
-      return res.status(403).json({ error: 'Код уже использован' });
+    if (bindings[code] && bindings[code] !== deviceId) {
+      return res.status(403).json({ error: 'Код уже использован на другом устройстве' });
     }
 
     bindings[code] = deviceId;
