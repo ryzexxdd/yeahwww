@@ -375,3 +375,71 @@ button {
   display: block;
   flex-shrink: 0;
 }
+
+body.app-locked #app {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.gate-overlay {
+  position: fixed;
+  inset: 0;
+  background: #f6f6f7;
+  z-index: 5000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 80px 16px 16px;
+}
+
+.gate-card {
+  width: min(400px, 100%);
+  background: #fff;
+  border-radius: 16px;
+  padding: 30px 20px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.gate-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #000;
+}
+
+.gate-subtitle {
+  margin-top: 10px;
+  color: #666;
+  font-size: 15px;
+}
+
+.code-input {
+  width: 100%;
+  font-size: 24px;
+  text-align: center;
+  padding: 14px;
+  margin-top: 24px;
+  border-radius: 12px;
+  border: 1.5px solid #ddd;
+  background: #fafafa;
+  letter-spacing: 4px;
+}
+
+.gate-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 12px;
+  border: none;
+  background: #2b6bcc;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.gate-msg {
+  color: #f24b4b;
+  margin-top: 15px;
+  font-size: 14px;
+  min-height: 20px;
+}
