@@ -129,7 +129,6 @@ module.exports = async (req, res) => {
     return res.status(403).json({ error: 'Неверный код' });
   }
 
-
   let releaseLock;
   try {
     releaseLock = await acquireLock();
@@ -156,4 +155,5 @@ module.exports = async (req, res) => {
     }
   }
 };
+
 
