@@ -105,20 +105,30 @@ module.exports = async (req, res) => {
   const rawCode = req.body?.code;
   const rawDeviceId = req.body?.deviceId;
 
-  if (rawCode === undefined || rawCode === null || !rawDeviceId) {
+  if ((rawCode === undefined || rawCode === null) && !rawDeviceId) {
     return res.status(400).json({ error: 'No data' });
   }
 
-  const code = String(rawCode).trim();
+  const code = rawCode === undefined || rawCode === null ? '' : String(rawCode).trim();
   const deviceId = String(rawDeviceId).trim();
+
+  if (!deviceId) {
+    return res.status(400).json({ error: 'No data' });
+  }
+
+  if (!code) {
+    const bindings = await readBindings();
+    const hasAccess = Object.values(bindings).includes(deviceId);
+    if (!hasAccess) {
+      return res.status(403).json({ error: 'Требуется код доступа' });
+    }
+    return res.status(200).json({ ok: true });
+  }
 
   if (!/^\d{6}$/.test(code) || !CODES.includes(code)) {
     return res.status(403).json({ error: 'Неверный код' });
   }
 
-  if (!deviceId) {
-    return res.status(400).json({ error: 'No data' });
-  }
 
   let releaseLock;
   try {
@@ -146,3 +156,4 @@ module.exports = async (req, res) => {
     }
   }
 };
+
