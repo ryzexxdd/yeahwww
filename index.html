@@ -160,24 +160,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
- const uploadBtn = document.getElementById('uploadBtn');
+  const uploadBtn = document.getElementById('uploadBtn');
   const photoInput = document.getElementById('photo');
   const preview = document.getElementById('preview');
-  const photoStorageKey = 'doc_photo';
-
-  function renderSavedPhoto(photoDataUrl) {
-    if (!preview || !uploadBtn) return;
-    if (!photoDataUrl) {
-      preview.innerHTML = '';
-      uploadBtn.style.display = '';
-      return;
-    }
-
-    preview.innerHTML = `<img src="${photoDataUrl}" style="width:100%;border-radius:14px;">`;
-    uploadBtn.style.display = 'none';
-  }
-
-  renderSavedPhoto(localStorage.getItem(photoStorageKey));
 
   if (uploadBtn && photoInput) {
     uploadBtn.addEventListener('click', () => photoInput.click());
@@ -187,13 +172,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = e => {
-      const photoDataUrl = e.target.result;
-      localStorage.setItem(photoStorageKey, photoDataUrl);
-      renderSavedPhoto(photoDataUrl);
+      preview.innerHTML = `<img src="${e.target.result}" style="width:100%;border-radius:14px;">`;
+      uploadBtn.style.display = 'none';
     };
     reader.readAsDataURL(file);
     });
-  }}
+  }
 
   const showBtn = document.getElementById('showQrBtn');
   const modal = document.getElementById('qrModal');
@@ -341,4 +325,3 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
