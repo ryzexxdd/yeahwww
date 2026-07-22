@@ -1,327 +1,45 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta name="theme-color" content="#ffffff">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>yeahwww</title>
-
-  <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png">
-  <link rel="apple-touch-icon" sizes="167x167" href="icon-167.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
-  <link rel="apple-touch-icon" href="icon-512.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Сайт временно закрыт</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <meta name="description" content="Данный сайт закрыли из-за технических неполадок. Свяжитесь для получения нового.">
 </head>
+<body>
+    <div class="background-radial"></div>
+    <div class="noise-overlay"></div>
+    
+    <main class="container">
+        <div class="status-badge">
+            <span class="status-dot"></span>
+            Offline
+        </div>
+        
+        <h1 class="glitch-text" data-text="Данный сайт закрыли">Данный сайт закрыли</h1>
+        <p class="subtitle">(из-за тех. неполадок)</p>
+        
+        <div class="action-card">
+            <h2 class="card-title">Получить новый сайт</h2>
+            <p class="card-desc">Мы переезжаем на новую платформу. Напишите нам, чтобы получить доступ.</p>
+            
+            <a href="https://t.me/yeahwww" class="tg-button" id="tg-link">
+                <svg class="tg-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 2L2 10.5L9.5 13M22 2L15 22L9.5 13M22 2L9.5 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>@yeahwww</span>
+            </a>
+        </div>
+    </main>
 
-<body class="app-locked">
-<div id="app">
-<div class="header">
-  <button class="back-btn" onclick="history.back()">‹</button>
-  <div class="header-title">Удостоверение личности</div>
-</div>
+    <footer class="footer">
+        &copy; 2024 YEAHWWW. All rights reserved.
+    </footer>
 
-<div class="tabs">
-  <button class="tab active" data-tab="doc">Документ</button>
-  <button class="tab" data-tab="req">Реквизиты</button>
-</div>
-
-<section id="doc" class="screen active">
-  <div class="photo-area">
-    <button id="uploadBtn" class="upload-btn">Загрузить фото</button>
-    <input type="file" id="photo" accept="image/*" hidden>
-    <div id="preview"></div>
-  </div>
-
-  <div class="actions">
-    <button class="primary" id="showQrBtn">
-      <span class="btn-icon qr"></span>
-      <span>Предъявить документ</span>
-    </button>
-
-    <button class="outline">
-      <span class="btn-icon share"></span>
-      <span>Отправить документ</span>
-    </button>
-  </div>
-</section>
-
-<section id="req" class="screen">
-  <div class="form">
-    <div class="field">
-      <label>ФИО</label>
-      <div class="copy-field">
-        <input id="fio" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww">
-        <button class="copy-btn" data-copy="fio"></button>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>ИИН</label>
-      <div class="copy-field">
-        <input id="iin" type="text" class="field-text" placeholder="Официальный Telegram – @yeahwww">
-        <button class="copy-btn" data-copy="iin"></button>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Дата рождения</label>
-      <div class="copy-field">
-        <input id="birth" type="text" class="field-text">
-        <button class="copy-btn" data-copy="birth"></button>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Номер документа</label>
-      <div class="copy-field">
-        <input id="docnum" type="text" class="field-text">
-        <button class="copy-btn" data-copy="docnum"></button>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Дата выдачи</label>
-      <div class="copy-field">
-        <input id="issued" type="text" class="field-text">
-        <button class="copy-btn" data-copy="issued"></button>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Срок действия</label>
-      <div class="copy-field">
-        <input id="expiry" type="text" class="field-text">
-        <button class="copy-btn" data-copy="expiry"></button>
-      </div>
-    </div>
-
-    <div class="actions">
-      <button class="outline" id="shareReqBtn">
-        <span class="btn-icon share"></span>
-        <span>Отправить реквизиты</span>
-      </button>
-    </div>
-  </div>
-</section>
-
-<div id="qrModal" class="qr-modal">
-  <div class="qr-sheet">
-    <div class="qr-header">
-      <div class="qr-title">Удостоверение личности</div>
-      <button class="qr-close" id="closeQr">×</button>
-    </div>
-
-    <div class="qr-content">
-      <div class="qr-text">Покажите QR-код сотруднику</div>
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=yeahwww" class="qr-image" alt="QR-код">
-      <div class="qr-subtext">или скажите код</div>
-      <div class="qr-code">983517</div>
-    </div>
-  </div>
-</div>
-
-</div>
-
-<div id="gateOverlay" class="gate-overlay">
-  <div class="gate-card">
-    <div class="gate-title">Получение доступа</div>
-    <div class="gate-subtitle">Введите код доступа</div>
-
-    <input id="gateCode" class="code-input" maxlength="6" inputmode="numeric" placeholder="XXXXXX">
-    <button id="gateBtn" class="gate-btn">Подтвердить код</button>
-    <div id="gateMsg" class="gate-msg"></div>
-    <a href="https://t.me/yeahwww" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px;color:#2b6bcc;text-decoration:none;font-size:14px;">Чтобы получить код напишите в Telegram @yeahwww</a>
-  </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(btn.dataset.tab).classList.add('active');
-    });
-  });
-
-  const fields = ['fio', 'iin', 'birth', 'docnum', 'issued', 'expiry'];
-  fields.forEach(id => {
-    const input = document.getElementById(id);
-    if (!input) return;
-    input.value = localStorage.getItem(id) || '';
-    input.addEventListener('input', () => {
-      localStorage.setItem(id, input.value);
-    });
-  });
-
-  const uploadBtn = document.getElementById('uploadBtn');
-  const photoInput = document.getElementById('photo');
-  const preview = document.getElementById('preview');
-
-  if (uploadBtn && photoInput) {
-    uploadBtn.addEventListener('click', () => photoInput.click());
-
-    photoInput.addEventListener('change', () => {
-    const file = photoInput.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      preview.innerHTML = `<img src="${e.target.result}" style="width:100%;border-radius:14px;">`;
-      uploadBtn.style.display = 'none';
-    };
-    reader.readAsDataURL(file);
-    });
-  }
-
-  const showBtn = document.getElementById('showQrBtn');
-  const modal = document.getElementById('qrModal');
-  const closeBtn = document.getElementById('closeQr');
-
-  if (showBtn && modal && closeBtn) {
-    showBtn.addEventListener('click', () => modal.classList.add('show'));
-    closeBtn.addEventListener('click', () => modal.classList.remove('show'));
-    modal.addEventListener('click', e => {
-      if (e.target === modal) modal.classList.remove('show');
-    });
-  }
-
-  document.addEventListener('click', e => {
-    const btn = e.target.closest('.copy-btn');
-    if (!btn) return;
-
-    const inputId = btn.dataset.copy;
-    const input = document.getElementById(inputId);
-    if (!input) return;
-
-    navigator.clipboard.writeText(input.value || '');
-
-    btn.style.opacity = '0.5';
-    setTimeout(() => {
-      btn.style.opacity = '1';
-    }, 300);
-  });
-
-  const shareReqBtn = document.getElementById('shareReqBtn');
-  if (shareReqBtn) shareReqBtn.addEventListener('click', () => {
-    const data = {
-      fio: document.getElementById('fio')?.value || '',
-      iin: document.getElementById('iin')?.value || '',
-      birth: document.getElementById('birth')?.value || '',
-      docnum: document.getElementById('docnum')?.value || '',
-      issued: document.getElementById('issued')?.value || '',
-      expiry: document.getElementById('expiry')?.value || ''
-    };
-
-    const text = `Удостоверение личности\n\nФИО: ${data.fio}\nИИН: ${data.iin}\nДата рождения: ${data.birth}\nНомер документа: ${data.docnum}\nДата выдачи: ${data.issued}\nСрок действия: ${data.expiry}`;
-
-    if (navigator.share) {
-      navigator.share({ title: 'Реквизиты документа', text });
-    } else {
-      navigator.clipboard.writeText(text);
-      alert('Реквизиты скопированы');
-    }
-  });
-
-  function persistValue(key, value, maxAgeDays = 365) {
-    localStorage.setItem(key, value);
-    document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeDays * 24 * 60 * 60}; samesite=lax`;
-  }
-
-  function readValue(key) {
-    const fromStorage = localStorage.getItem(key);
-    if (fromStorage) return fromStorage;
-
-    const fromCookie = document.cookie
-      .split('; ')
-      .find(row => row.startsWith(`${key}=`))
-      ?.split('=')[1];
-
-    return fromCookie ? decodeURIComponent(fromCookie) : '';
-  }
-
-  function getDeviceId() {
-    let id = readValue('device_id_server');
-    if (!id) {
-      id = crypto.randomUUID ? crypto.randomUUID() : `dev-${Date.now()}`;
-      persistValue('device_id_server', id, 3650);
-    }
-    return id;
-  }
-
-  function grantAccess(overlayNode) {
-    persistValue('site_access_granted_server', '1');
-    document.body.classList.remove('app-locked');
-    overlayNode.remove();
-  }
-
-  const overlay = document.getElementById('gateOverlay');
-  const gateBtn = document.getElementById('gateBtn');
-  const gateInput = document.getElementById('gateCode');
-  const gateMsg = document.getElementById('gateMsg');
-
-
-  function revokeAccess() {
-    localStorage.removeItem('site_access_granted_server');
-    document.cookie = 'site_access_granted_server=; path=/; max-age=0; samesite=lax';
-  }
-
-  if (gateInput && gateBtn) gateInput.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-      gateBtn.click();
-    }
-  });
-
-  if (gateBtn && gateInput && gateMsg && overlay) gateBtn.addEventListener('click', async () => {
-    const code = gateInput.value.trim();
-    if (!/^\d{6}$/.test(code)) {
-      gateMsg.textContent = 'Введите 6 цифр';
-      return;
-    }
-
-    gateMsg.textContent = 'Проверка...';
-
-    try {
-      const res = await fetch('/api/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, deviceId: getDeviceId() })
-      });
-
-      const data = await res.json();
-
-      if (res.ok && data.ok) {
-        grantAccess(overlay);
-      } else {
-        gateMsg.textContent = data.error || 'Неверный код, Для получение напишите в телеграмм @yeahwww';
-      }
-    } catch (error) {
-      gateMsg.textContent = 'Неверный код, Для получение напишите в телеграмм @yeahwww';
-    }
-  });
-
-  if (overlay && document.body.classList.contains('app-locked')) {
-    fetch('/api/verify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ deviceId: getDeviceId() })
-    })
-      .then(res => res.json().then(data => ({ ok: res.ok, data })))
-      .then(({ ok, data }) => {
-        if (ok && data.ok) {
-          grantAccess(overlay);
-        } else {
-          revokeAccess();
-        }
-      })
-      .catch(() => {});
-  }
-});
-</script>
+    <script src="main.js"></script>
 </body>
 </html>
