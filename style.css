@@ -1,444 +1,321 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #fff;
-}
-
-/* tabs */
-.tabs {
-  display: flex;
-  margin: 8px auto;                 /* меньше отступ сверху */
-  width: calc(100% - 32px);
-  max-width: 420px;
-
-  background: #e5e5e5;
-  border-radius: 12px;              /* было 16 */
-  padding: 3px;                     /* было 4 */
-}
-
-.tab {
-  flex: 1;
-  border: none;
-  background: transparent;
-
-  padding: 7px 0;                   /* 🔴 КЛЮЧ: было 12px */
-  border-radius: 10px;              /* было 14 */
-
-  font-size: 14px;                  /* было 15 */
-  font-weight: 400;
-  color: #9a9a9a;
-}
-
-.tab.active {
-  background: #ffffff;
-  color: #000;
-  font-weight: 500;
-}
-
-.tab.active {
-  background: #ffffff;
-  color: #000;
-  font-weight: 500;
-}
-
-
-/* screens */
-.screen {
-  display: none;
-  min-height: calc(100vh - 120px);
-}
-
-.screen.active {
-  display: flex;
-  flex-direction: column;
-}
-
-#req .actions {
-  margin-top: 16px;
-}
- 
-/* photo */
-.photo-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.upload-btn {
-  background: #2b6bcc;
-  color: #fff;
-  padding: 14px 26px;
-  border-radius: 12px;
-  border: none;
-  font-size: 16px;
-}
-
-#preview {
-  margin-top: 20px;
-  width: 90%;
-  max-width: 360px;
-}
-
-#preview img {
-  width: 100%;
-  border-radius: 14px;
-  display: block;
-}
-
-/* form */
-.form {
-  padding: 12px;
-}
-
-.field {
-  border-bottom: 1px solid #eee;
-  padding: 10px 0;
-}
-
-.field label {
-  font-size: 13px;
-  line-height: 16px;
-  color: #8e8e93; /* iOS system gray */
-}
-
-
-.field input {
-  border: none;
-  outline: none;
-  width: 100%;
-
-  font-size: 17px;              /* iOS стандарт */
-  font-weight: 400;
-  line-height: 22px;            /* 🔴 КЛЮЧЕВО */
-  padding: 6px 0 2px 0;         /* 🔴 выравнивание по baseline */
-
-  color: #000;
-  background: transparent;
-
-  font-feature-settings: "tnum"; /* 🔴 одинаковая ширина цифр */
-  -webkit-text-size-adjust: 100%;
-}
-
-
-/* buttons */
-.actions {
-  padding: 12px;
-}
-
-.primary {
-  width: 100%;
-  background: #2b6bcc;
-  color: #fff;
-  border: none;
-  padding: 14px;
-  border-radius: 12px;
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-
-.outline {
-  width: 100%;
-  background: #fff;
-  border: 2px solid #2b6bcc;
-  color: #2b6bcc;
-  padding: 14px;
-  border-radius: 12px;
-  font-size: 16px;
-}
-/* header */
-.header {
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: sticky;
-  top: 0;
-  background: #fff;
-  border-bottom: 1px solid #eee;
-  z-index: 10;
-}
-
-.header-title {
-  font-size: 18px;
-  font-weight: 500;
-  color: #000;
-}
-
-.back-btn {
-  position: absolute;
-  left: 12px;
-  background: none;
-  border: none;
-  font-size: 28px;
-  color: #000;
-  cursor: pointer;
-  line-height: 1;
-}
-/* mini action buttons */
-.quick-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 4px 16px 8px;
-}
-
-.chip {
-  background: #eef3fb;
-  color: #2b6bcc;
-  border: none;
-  border-radius: 999px;
-  padding: 6px 12px;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1;
+:root {
+    --bg-color: #050505;
+    --card-bg: rgba(20, 20, 22, 0.7);
+    --accent-color: #00f2ff;
+    --accent-glow: rgba(0, 242, 255, 0.5);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --glitch-red: #ff00c1;
+    --glitch-blue: #00fff9;
 }
 
 * {
-  font-feature-settings: "tnum";
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* ===== SHOW QR ===== */
-.qr-modal.show {
-  display: flex;
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
 }
 
-/* ===== QR MODAL BASE (ОБЯЗАТЕЛЬНО) ===== */
-.qr-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.35);
-  display: none;               /* 🔴 ВАЖНО: скрыт по умолчанию */
-  align-items: flex-end;
-  justify-content: center;
-  z-index: 999;
+/* Background elements */
+.background-radial {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, #111122 0%, #050505 100%);
+    z-index: -2;
 }
 
-/* ===== ПОКАЗ ===== */
-.qr-modal.show {
-  display: flex;
+.noise-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3欲%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.05;
+    z-index: -1;
+    pointer-events: none;
 }
 
-/* ===== SHEET ===== */
-.qr-sheet {
-  width: 100%;
-  max-width: 420px;
-  background: #fff;
-  border-radius: 18px 18px 0 0;
-  padding: 16px;
-  animation: slideUp .25s ease;
+/* Container */
+.container {
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    z-index: 1;
 }
 
-/* ===== HEADER ===== */
-.qr-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+/* Status Badge */
+.status-badge {
+    background: rgba(255, 50, 50, 0.1);
+    color: #ff4747;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 50, 50, 0.2);
+    animation: fadeIn 1s ease-out;
 }
 
-.qr-title {
-  font-size: 16px;
-  font-weight: 500;
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #ff4747;
+    border-radius: 50%;
+    margin-right: 8px;
+    box-shadow: 0 0 10px #ff4747;
+    animation: pulse 2s infinite;
 }
 
-.qr-close {
-  background: none;
-  border: none;
-  font-size: 26px;
-  line-height: 1;
-  cursor: pointer;
+/* Typography */
+.glitch-text {
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+    position: relative;
+    color: var(--text-primary);
 }
 
-/* ===== CONTENT ===== */
-.qr-content {
-  text-align: center;
+.subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+    font-weight: 300;
 }
 
-.qr-text {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 12px;
-}
-
-.qr-image {
-  width: 220px;
-  height: 220px;
-}
-
-.qr-subtext {
-  font-size: 13px;
-  color: #999;
-  margin-top: 10px;
-}
-
-.qr-code {
-  font-size: 28px;
-  font-weight: 600;
-  margin-top: 6px;
-  letter-spacing: 2px;
-}
-
-/* ===== ANIMATION ===== */
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
+/* Action Card */
+.action-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    width: 100%;
+    padding: 2.5rem 1.5rem;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     transform: translateY(0);
-  }
+    animation: float 6s ease-in-out infinite;
 }
 
-/* ===== BUTTON ICONS (Kaspi-style) ===== */
-
-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+.card-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-/* базовая иконка */
-.btn-icon {
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
+.card-desc {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 2rem;
 }
 
-/* QR icon */
-.btn-icon.qr {
-  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='3' y='3' width='7' height='7'/%3E%3Crect x='14' y='3' width='7' height='7'/%3E%3Crect x='3' y='14' width='7' height='7'/%3E%3Cpath d='M14 14h3v3h-3zM17 17h4'/%3E%3C/svg%3E");
+/* Button */
+.tg-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-color);
+    color: #000;
+    text-decoration: none;
+    padding: 14px 28px;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    width: 100%;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 20px var(--accent-glow);
 }
 
-/* Share icon */
-.btn-icon.share {
-  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232b6bcc' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 3v12'/%3E%3Cpath d='M8 7l4-4 4 4'/%3E%3Crect x='4' y='15' width='16' height='6' rx='2'/%3E%3C/svg%3E");
+.tg-button:active {
+    transform: scale(0.95);
 }
 
-/* цвет иконки внутри синей кнопки */
-.primary .btn-icon.share {
-  filter: brightness(0) invert(1);
+.tg-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
 }
 
-/* ===== COPY ICON ===== */
-.copy-field {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* Footer */
+.footer {
+    position: fixed;
+    bottom: 2rem;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.2);
+    text-transform: uppercase;
 }
 
-.field-text {
-  flex: 1;
+/* Animations */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.3);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
-.copy-btn {
-  width: 28px;
-  height: 28px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  position: relative;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.copy-btn::before,
-.copy-btn::after {
-  content: "";
-  position: absolute;
-  border: 2px solid #b0b0b0;
-  border-radius: 4px;
-  width: 14px;
-  height: 16px;
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
 }
 
-.copy-btn::before {
-  top: 6px;
-  left: 8px;
-  background: #fff;
+/* Glitch Effect on Title */
+.glitch-text::before,
+.glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-color);
 }
 
-.copy-btn::after {
-  top: 3px;
-  left: 5px;
-  background: #fff;
+.glitch-text::before {
+    left: 2px;
+    text-shadow: -2px 0 var(--glitch-red);
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 5s infinite linear alternate-reverse;
 }
 
-.copy-btn:active {
-  transform: scale(0.9);
+.glitch-text::after {
+    left: -2px;
+    text-shadow: -2px 0 var(--glitch-blue);
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim2 5s infinite linear alternate-reverse;
 }
 
-/* ===== FIX: ICONS VISIBILITY (НЕ МЕНЯЕТ ЛОГИКУ) ===== */
-.btn-icon {
-  display: block;
-  flex-shrink: 0;
-}
-body.app-locked #app {
-  visibility: hidden;
-  pointer-events: none;
+@keyframes glitch-anim {
+    0% {
+        clip: rect(31px, 9999px, 94px, 0);
+    }
+
+    4% {
+        clip: rect(70px, 9999px, 71px, 0);
+    }
+
+    /* ... shortened for brevity, adding key points ... */
+    100% {
+        clip: rect(67px, 9999px, 62px, 0);
+    }
 }
 
-.gate-overlay {
-  position: fixed;
-  inset: 0;
-  background: #f6f6f7;
-  z-index: 5000;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 80px 16px 16px;
+@keyframes glitch-anim2 {
+    0% {
+        clip: rect(65px, 9999px, 100px, 0);
+    }
+
+    100% {
+        clip: rect(2px, 9999px, 40px, 0);
+    }
 }
 
-.gate-card {
-  width: min(400px, 100%);
-  background: #fff;
-  border-radius: 16px;
-  padding: 30px 20px;
-  text-align: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+/* Extra unusual background effect - Glows */
+body::before {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(0, 242, 255, 0.15) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    pointer-events: none;
 }
 
-.gate-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #000;
+/* Scanning line effect */
+.noise-overlay::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(transparent 0%,
+            rgba(0, 242, 255, 0.05) 50%,
+            transparent 100%);
+    background-size: 100% 4px;
+    animation: scan 4s linear infinite;
+    pointer-events: none;
 }
 
-.gate-subtitle {
-  margin-top: 10px;
-  color: #666;
-  font-size: 15px;
+@keyframes scan {
+    from {
+        transform: translateY(-100%);
+    }
+
+    to {
+        transform: translateY(100%);
+    }
 }
 
-.code-input {
-  width: 100%;
-  font-size: 24px;
-  text-align: center;
-  padding: 14px;
-  margin-top: 24px;
-  border-radius: 12px;
-  border: 1.5px solid #ddd;
-  background: #fafafa;
-  letter-spacing: 4px;
-}
+@media (max-width: 480px) {
+    .glitch-text {
+        font-size: 1.8rem;
+    }
 
-.gate-btn {
-  width: 100%;
-  margin-top: 20px;
-  padding: 16px;
-  border-radius: 12px;
-  border: none;
-  background: #2b6bcc;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.gate-msg {
-  color: #f24b4b;
-  margin-top: 15px;
-  font-size: 14px;
-  min-height: 20px;
+    .action-card {
+        padding: 2rem 1.2rem;
+    }
 }
